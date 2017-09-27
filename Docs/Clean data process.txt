@@ -1,0 +1,4 @@
+1 - Removal irrelevant features
+2 - Removal drop-out records
+3 - Change features types to binary
+4 - Normalize data with z-score

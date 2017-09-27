@@ -1,0 +1,246 @@
+﻿---- VARIÁVEIS COMUNS------
+CodigoPessoa: 							Código do aluno
+CodigoDisciplina: 						Código da disciplina 
+PeriodoLetivo: 							Em bimestres. Exemplo, 20140201 = primeiro bimestre do semestre de 2014-2
+NumeroModulos: 							Duração em quantidade de semanas da discipina (geralmente as disciplinas são de 9 semanas)
+CodigoTurma: 							Código da Turma
+NumeroModulo: 							Semana (dentre as 9) a que se refere o registro 	
+NumeroUltimoModulo: 						Número da semana do último acesso ao AVA por parte do aluno
+Login_Quantidade: 						Quantiade acumulada de logins do aluno
+Numero_Dias_Acessados_Modulo: 					Quantidade de dias distintos em que o aluno fez acesso dentro da semana que consta em NumeroModulo
+Numero_Dias_Acessados_Modulo_Somado: 				Quantidade acumulada de dias distintos em que o aluno fez acesso (desde o início do disciplina)
+Turno_TempoUsoTotal: 						Tempo de uso dentro do módulo
+Turno_TempoUsoTotal_Somado:					Tempo de uso acumulado desde o início da disciplina
+Turno_PercentualUsoMadrugada
+Turno_PercentualUsoMadrugada_Somado
+Turno_PercentualUsoManha
+Turno_PercentualUsoManha_Somado
+Turno_PercentualUsoTarde
+Turno_PercentualUsoTarde_Somado
+Turno_PercentualUsoNoite
+Turno_PercentualUsoNoite_Somado
+StatusMatricula: 						Aprovado, Reprovado, Desistente, Cancelado
+Evadido: 							Aprovado = Sucesso. Caso contrário = ReprEvadiu
+--- 
+QuantidadeMatriculasValidas: 					Total de disciplinas cursadas pelo aluno
+QuantidadeMatriculasAprovadas: 					Total de aprovações
+MatriculasPercentualAproveitamento: 				Aproveitamento do aluno em percentual de aprovações
+
+
+---- DISCIPLINAS, TURMAS e VARIÁVEIS ADICIONAIS -----------------------------------------------------
+
+"Oficina Raciocínio Lógico" (balanceada)
+	CodigoDisciplina = 60463 (Todos tecnólogos de gestão)
+	- Turmas 2º Bim 2012:2014/1 
+		4130,4604,4605,5388,5468,5469,5714,6388,6389,6398,7098,7118,7274,7502 
+		---- VARIÁVEIS ADICIONAIS ------
+		Forum_Quantidade_Post
+		Forum_Quantidade_Post_Somado
+		Forum_Quantidade_Visualizacoes
+		Forum_Quantidade_Visualizacoes_Somado
+		Forum_TempoUso_Somado
+		Chat_Quantidade_Mensagens
+		Chat_Quantidade_Mensagens_Somado
+		Chat_TempoUso
+		Chat_TempoUso_Somado
+		Assignment_View_Quantidade
+		Assignment_View_Quantidade_Somado
+		Assignment_View_TempoUso
+		Assignment_View_TempoUso_Somado
+		Resource_View_Quantidade
+		Resource_View_Quantidade_Somado
+		Resource_View_Tempo
+		Resource_View_Tempo_Somado
+		Log_Post_Quantidade
+		Log_Post_Quantidade_Somado
+		Log_View_Quantidade
+		Log_View_Quantidade_Somado
+		Questionario_Quantidade
+		Questionario_Quantidade_Somado
+		Questionario_TempoUso
+		Questionario_TempoUso_Somado
+		
+
+"Matemática para administração" (balanceada ou mais evadidos)
+	CodigoDisciplina = 60465
+	- Turmas 1º Bim 2012:2014/1
+		4114,4448,4917,5061,5799,6030,6590,6895,7411, 
+	- Turmas 2º Bim 2012:2013
+		4433,4434,4435,4603,5384,5489,5490,6400,6401,6402,7114,7297, 
+		---- VARIÁVEIS ADICIONAIS ------
+		Forum_Quantidade_Post
+		Forum_Quantidade_Post_Somado
+		Forum_Quantidade_Visualizacoes
+		Forum_Quantidade_Visualizacoes_Somado
+		Forum_TempoUso_Somado
+		Chat_Quantidade_Mensagens
+		Chat_Quantidade_Mensagens_Somado
+		Chat_TempoUso
+		Chat_TempoUso_Somado
+		Assignment_View_Quantidade
+		Assignment_View_Quantidade_Somado
+		Assignment_View_TempoUso
+		Assignment_View_TempoUso_Somado
+		Resource_View_Quantidade
+		Resource_View_Quantidade_Somado
+		Resource_View_Tempo
+		Resource_View_Tempo_Somado
+		Log_Post_Quantidade
+		Log_Post_Quantidade_Somado
+		Log_View_Quantidade
+		Log_View_Quantidade_Somado
+		-- Não tem nos dados
+		SCORM
+
+
+"Gestão por processos" (desbalanceamento clássico)
+	CodigoDisciplina = 50262 (Disciplina de não ingressantes)
+	- Turmas 1º Bim 2012:2014/1 
+		4231,4430,4431,5100,5101,6021,6513,7397 
+	- Turmas 2º Bim 2012:2013
+		6384,6385,7092,7272 
+		---- VARIÁVEIS ADICIONAIS ------
+		Forum_Quantidade_Post
+		Forum_Quantidade_Post_Somado
+		Forum_Quantidade_Visualizacoes
+		Forum_Quantidade_Visualizacoes_Somado
+		Forum_TempoUso_Somado
+		Chat_Quantidade_Mensagens
+		Chat_Quantidade_Mensagens_Somado
+		Chat_TempoUso
+		Chat_TempoUso_Somado
+		Assignment_View_Quantidade
+		Assignment_View_Quantidade_Somado
+		Assignment_View_TempoUso
+		Assignment_View_TempoUso_Somado
+		Resource_View_Quantidade
+		Resource_View_Quantidade_Somado
+		Resource_View_Tempo
+		Resource_View_Tempo_Somado
+		Log_Post_Quantidade
+		Log_Post_Quantidade_Somado
+		Log_View_Quantidade
+		Log_View_Quantidade_Somado
+		Questionario_Quantidade
+		Questionario_Quantidade_Somado
+		Questionario_TempoUso
+		Questionario_TempoUso_Somado
+		
+"Lógica" (balanceada)
+	CodigoDisciplina = 60500 (Disciplina de ingressantes)
+	- Turmas 1º Bim 2012:2014/1 
+		4198,4468,4916,5750,6482,7409, 
+		---- VARIÁVEIS ADICIONAIS ------
+		Forum_Quantidade_Post
+		Forum_Quantidade_Post_Somado
+		Forum_Quantidade_Visualizacoes
+		Forum_Quantidade_Visualizacoes_Somado
+		Forum_TempoUso_Somado
+		Chat_Quantidade_Mensagens
+		Chat_Quantidade_Mensagens_Somado
+		Chat_TempoUso
+		Chat_TempoUso_Somado
+		Assignment_View_Quantidade
+		Assignment_View_Quantidade_Somado
+		Assignment_View_TempoUso
+		Assignment_View_TempoUso_Somado
+		Resource_View_Quantidade
+		Resource_View_Quantidade_Somado
+		Resource_View_Tempo
+		Resource_View_Tempo_Somado
+		Log_Post_Quantidade
+		Log_Post_Quantidade_Somado
+		Log_View_Quantidade
+		Log_View_Quantidade_Somado
+		Questionario_Quantidade
+		Questionario_Quantidade_Somado
+		Questionario_TempoUso
+		Questionario_TempoUso_Somado
+		
+		
+"Fundamentos do Processo Administrativo" (desbalanceamento clássico)
+	CodigoDisciplina =  50404 (Disciplina de ingressantes)
+	- Turmas 1º Bim 2012:2014/1 
+		4224,4428,4429,4912,5102,5786,6019,6547,7385, 
+	- Turmas 2º Bim 2012:2014/1
+		6395,7111,7525,  
+		---- VARIÁVEIS ADICIONAIS ------
+		Forum_Quantidade_Post
+		Forum_Quantidade_Post_Somado
+		Forum_Quantidade_Visualizacoes
+		Forum_Quantidade_Visualizacoes_Somado
+		Forum_TempoUso_Somado
+		Chat_Quantidade_Mensagens
+		Chat_Quantidade_Mensagens_Somado
+		Chat_TempoUso
+		Chat_TempoUso_Somado
+		Assignment_View_Quantidade
+		Assignment_View_Quantidade_Somado
+		Assignment_View_TempoUso
+		Assignment_View_TempoUso_Somado
+		Resource_View_Quantidade
+		Resource_View_Quantidade_Somado
+		Resource_View_Tempo
+		Resource_View_Tempo_Somado
+		Log_Post_Quantidade
+		Log_Post_Quantidade_Somado
+		Log_View_Quantidade
+		Log_View_Quantidade_Somado
+		Questionario_Quantidade
+		Questionario_Quantidade_Somado
+		Questionario_TempoUso
+		Questionario_TempoUso_Somado
+		
+"Economia de Mercado" (desbalanceamento clássico)
+	CodigoDisciplina = 50355
+	- Turmas 2º Bim 2012:2014/1
+		4109,4424,4449,5357,5473,5770,6393,7142,7281,7567 
+		---- VARIÁVEIS ADICIONAIS ------
+		Forum_Quantidade_Post
+		Forum_Quantidade_Post_Somado
+		Forum_Quantidade_Visualizacoes
+		Forum_Quantidade_Visualizacoes_Somado
+		Forum_TempoUso_Somado
+		Chat_Quantidade_Mensagens
+		Chat_Quantidade_Mensagens_Somado
+		Chat_TempoUso
+		Chat_TempoUso_Somado
+		Assignment_View_Quantidade
+		Assignment_View_Quantidade_Somado
+		Assignment_View_TempoUso
+		Assignment_View_TempoUso_Somado
+		Resource_View_Quantidade
+		Resource_View_Quantidade_Somado
+		Resource_View_Tempo
+		Resource_View_Tempo_Somado
+		Log_Post_Quantidade
+		Log_Post_Quantidade_Somado
+		Log_View_Quantidade
+		Log_View_Quantidade_Somado
+		
+"Introdução à Educação a Distância"
+	CodigoDisciplina = 97597
+	- Turmas 2012:2014/1
+		4112,4442,4443,4444,4445,4467,4918,5057,5058,5059,5415,5778,6022,6023,6024,6112,6390,6422,6514,6893,6894,7096,7998,8038,8039
+		---- VARIÁVEIS ADICIONAIS ------
+		Forum_Quantidade_Post
+		Forum_Quantidade_Post_Somado
+		Forum_Quantidade_Visualizacoes
+		Forum_Quantidade_Visualizacoes_Somado
+		Forum_TempoUso_Somado
+		Chat_Quantidade_Mensagens
+		Chat_Quantidade_Mensagens_Somado
+		Chat_TempoUso
+		Chat_TempoUso_Somado
+		Assignment_View_Quantidade
+		Assignment_View_Quantidade_Somado
+		Assignment_View_TempoUso
+		Assignment_View_TempoUso_Somado
+		Resource_View_Quantidade
+		Resource_View_Quantidade_Somado
+		Resource_View_Tempo
+		Resource_View_Tempo_Somado
+		Log_Post_Quantidade
+		Log_Post_Quantidade_Somado
+		Log_View_Quantidade
+		Log_View_Quantidade_Somado	

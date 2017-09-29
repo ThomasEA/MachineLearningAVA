@@ -1,0 +1,6 @@
+			Alunos		Turmas		Aprovações
+
+Fund. Proc. Adm.	926		12		72%
+Rac. Lógico		1003		14		52%
+Mat. Adm.		735		21		35%	
+Lógica			421		6		42%

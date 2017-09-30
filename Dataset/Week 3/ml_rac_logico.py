@@ -9,35 +9,38 @@ Created on Thu Sep 28 09:06:48 2017
 # -*- coding: utf-8 -*-
 import numpy as np
 import pandas as pd
+import util as util
 
-train_df = pd.read_csv("m3_rac_logico_ext.csv", sep=';')
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn import preprocessing
+
+matplotlib.style.use('ggplot')
+
+train_df = pd.read_csv("m3_rac_logico_ext.CSV", sep=';')
+
+#Altera os valores da coluna Evadido para binário
+train_df.Evadido = train_df.Evadido.map({'ReprEvadiu': 0, 'Sucesso': 1})
+
+#fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(6,5))
+fig, (ax1) = plt.subplots(ncols=1, figsize=(25,5))
+
+ax1.set_title('Before Scaling')
+sns.kdeplot(train_df.Evadido, ax=ax1)
+sns.kdeplot(train_df.Login_Quantidade, ax=ax1)
+sns.kdeplot(train_df.Numero_Dias_Acessados_Modulo_Somado, ax=ax1)
+sns.kdeplot(train_df.Chat_Quantidade_Mensagens_Somado, ax=ax1)
+sns.kdeplot(train_df.Questionario_TempoUso_Somado, ax=ax1)
+sns.kdeplot(train_df.Turno_TempoUsoNoite_Somado, ax=ax1)
+plt.show()
 
 #print(train_df.describe())
 #print(train_df.info())
 
 #Mostra os valores distintos para a coluna Evadido
 #print(train_df.Evadido.unique())
-
-#Altera os valores da coluna Evadido para binário
-train_df.Evadido = train_df.Evadido.map({'ReprEvadiu': 0, 'Sucesso': 1})
-
-#Calcular z-Score para algumas features
-z_score_features = ['Assignment_View_TempoUso_Somado',
-                    'Chat_TempoUso_Somado',
-                    'Forum_TempoUso_Somado',
-                    'Questionario_TempoUso_Somado',
-                    'Resource_View_Tempo_Somado',
-                    'Turno_PercentualUsoMadrugada_Somado',
-                    'Turno_PercentualUsoManha_Somado',
-                    'Turno_PercentualUsoNoite_Somado',
-                    'Turno_PercentualUsoTarde_Somado',
-                    'Turno_TempoUsoMadrugada_Somado',
-                    'Turno_TempoUsoManha_Somado',
-                    'Turno_TempoUsoNoite_Somado',
-                    'Turno_TempoUsoTarde_Somado',
-                    'Turno_TempoUsoTotal_Somado',]
-for col in z_score_features:
-    train_df[col] = (train_df[col] - train_df[col].mean())/train_df[col].std(ddof=0)
 
 
 #Verifica se existe alguma coluna com valor null
@@ -50,6 +53,11 @@ for key in turmas.groups.keys():
     print(key)
     print(turmas.get_group(name=key).info())
 """
+
+"""
+#print("np.nan=", np.where(np.isnan(train_df)))
+#print("np.inf=", np.where(np.isinf(train_df)))
+
 #Importando classificador
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import GridSearchCV
@@ -62,31 +70,60 @@ dt = GridSearchCV(clf, clf_param)
 
 print('*****************************************************')
 print('Features in dataframe:')
-print(train_df.info())
+#print(train_df.info())
 print('*****************************************************')
 
+#Calcular z-Score para algumas features
+features = train_df[train_df.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
+features_target = train_df.Evadido
+
+scaler = preprocessing.StandardScaler().fit(features)
+
+train_df_std = pd.DataFrame(scaler.transform(features), columns = list(features))
+
+#features_zscore = train_df[train_df.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
+#train_df_std = pd.DataFrame(scaler.transform(features_zscore), columns = list(features_zscore))
+
+#.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido']) #list(features)
+
+#pd.DataFrame(scaler.transform(train_df), columns = features_zscore, copy = false)
+"""
+
+
+"""
 #Embaralha dataset
-train_df = shuffle(train_df)
+#train_df = shuffle(train_df)
 
 #Seleciona todas as colunas, exceto a coluna Evadido e outras que são irrelevantes
 features = train_df[train_df.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
+
+
+#features_columns.remove('Assignment_Post_Quantidade_Somado')
+print(features_columns)
+features_normalized = pd.DataFrame(scaler.transform(features), columns = features_columns)
+
+print('---- APOS CALCULO zScore ---------')
+print(features_normalized.head(5))
+print('-----------------------------------')
+
+
 target = train_df.Evadido
 
 print('*****************************************************')
 print('Features used to predict:')
-print(features.info())
+#print(features_normalized.info())
 print('*****************************************************')
 
 #treina
-dt.fit(features, target)
+dt.fit(features_normalized, target)
 
 print('Score:')
-print(dt.score(X = features, y = target))
+print(dt.score(X = features_normalized, y = target))
                       
 #features_test = test_df.loc[:, test_df.columns != 'Evadido']
 
 #clf.predict(features_test)
 
 #print(clf.score(X = features_test, y = target))
-
+"""
 

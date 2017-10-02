@@ -3,7 +3,6 @@
 Created on Thu Sep 28 09:06:48 2017
 
 @author: Everton
-@purpose: Script inicial para familiarização com python
 """
 
 # -*- coding: utf-8 -*-
@@ -11,119 +10,135 @@ import numpy as np
 import pandas as pd
 import util as util
 
-import matplotlib
-import matplotlib.pyplot as plt
-import seaborn as sns
+import graficos as graficos
+
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
 
 from sklearn import preprocessing
+from sklearn.utils import shuffle
 
-matplotlib.style.use('ggplot')
+normalizar = False
+plot_var_cov = True
 
-train_df = pd.read_csv("m3_rac_logico_ext.CSV", sep=';')
+s_disciplina = 'rac_logico'
+t_disciplina = 'mat_adm'
+
+df = pd.read_csv('m3_' + s_disciplina + '_ext.CSV', sep=';')
 
 #Altera os valores da coluna Evadido para binário
-train_df.Evadido = train_df.Evadido.map({'ReprEvadiu': 0, 'Sucesso': 1})
+df.Evadido = df.Evadido.map({'ReprEvadiu': 0, 'Sucesso': 1})
 
-#fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(6,5))
-fig, (ax1) = plt.subplots(ncols=1, figsize=(25,5))
+#Calcular z-Score para algumas features
+#--------------------------------------
+if (normalizar==True):
+    features = df[df.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
+    scaler = preprocessing.StandardScaler().fit(features)
+    df_std = pd.DataFrame(scaler.transform(features), columns = list(features))
+    
+    df_std['Evadido'] = df.Evadido
+    df_std['CodigoDisciplina'] = df.CodigoDisciplina
+    df_std['CodigoTurma'] = df.CodigoTurma
+    df_std['PeriodoLetivo'] = df.PeriodoLetivo
+else:
+    df_std = df
+#--------------------------------------
 
-ax1.set_title('Before Scaling')
-sns.kdeplot(train_df.Evadido, ax=ax1)
-sns.kdeplot(train_df.Login_Quantidade, ax=ax1)
-sns.kdeplot(train_df.Numero_Dias_Acessados_Modulo_Somado, ax=ax1)
-sns.kdeplot(train_df.Chat_Quantidade_Mensagens_Somado, ax=ax1)
-sns.kdeplot(train_df.Questionario_TempoUso_Somado, ax=ax1)
-sns.kdeplot(train_df.Turno_TempoUsoNoite_Somado, ax=ax1)
-plt.show()
-
-#print(train_df.describe())
-#print(train_df.info())
-
-#Mostra os valores distintos para a coluna Evadido
-#print(train_df.Evadido.unique())
+if (plot_var_cov == True):
+    graficos.plot_corr_matrix(df_std.corr(), 'Correlação [' + s_disciplina + ']')
+    graficos.plot_corr_matrix(df_std.cov(), 'Covariância [' + s_disciplina + ']')
 
 
-#Verifica se existe alguma coluna com valor null
-#print(train_df.isnull().any())
+#Embaralha dataframe normalizado
+df_normalized = shuffle(df_std)
 
-#separa em turmas
-"""
-turmas = train_df.groupby('CodigoTurma')
-for key in turmas.groups.keys():
-    print(key)
-    print(turmas.get_group(name=key).info())
-"""
-
-"""
-#print("np.nan=", np.where(np.isnan(train_df)))
-#print("np.inf=", np.where(np.isinf(train_df)))
-
-#Importando classificador
+#Importando e configurando classificador (DecisionTree)
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import GridSearchCV
-from sklearn.utils import shuffle
 
 clf_param = {'max_depth': range(3,10)}
 clf = DecisionTreeClassifier()
 
 dt = GridSearchCV(clf, clf_param)
 
-print('*****************************************************')
-print('Features in dataframe:')
-#print(train_df.info())
-print('*****************************************************')
+#Separa os folds por turma
+folds = util.sep_folds(df_normalized, 'CodigoTurma')
+
+qtd_folds = len(folds.groups)
+
+#Cross-validation
+cm_final = np.matrix('0 0; 0 0')
+
+print('====================')
+print('Coss-validation: (k = ' + str(qtd_folds) + ')')
+for key in folds.groups.keys():
+    fold_teste = folds.get_group(name=key)
+    fold_treino = folds.filter(lambda x: x.name!=key)
+    
+    qtd_ex_teste = len(fold_teste)
+    qtd_ex_treino = len(fold_treino)
+    
+    print('\tRegistros: ' + str(qtd_ex_teste + qtd_ex_treino) + ' / Treino: ' + str(qtd_ex_treino) + ' / Teste: ' + str(qtd_ex_teste))
+ 
+    #Separa os dados de treino do atributo de predição
+    features = fold_treino[fold_treino.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
+    target = fold_treino.Evadido
+    
+    dt.fit(features, target)
+    
+    #Separa os dados de teste do atributo de predição
+    features_test = fold_teste[fold_teste.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
+    target_test = fold_teste.Evadido
+    
+    predicted = dt.predict(features_test)
+    
+    cm = confusion_matrix(target_test, predicted)
+    
+    cm_final = cm_final + cm
+
+#Plota a matriz de confusão para o modelo
+util.show_confusion_matrix(cm_final, class_labels=['Insucesso', 'Sucesso'])
+
+#-----------------------------------------
+#Aplica classificador em outra disciplina
+
+df_target = pd.read_csv('m3_' + t_disciplina + '_ext.CSV', sep=';')
+
+#Altera os valores da coluna Evadido para binário
+df_target.Evadido = df_target.Evadido.map({'ReprEvadiu': 0, 'Sucesso': 1})
 
 #Calcular z-Score para algumas features
-features = train_df[train_df.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
-features_target = train_df.Evadido
+#--------------------------------------
+if (normalizar==True):
+    features_target = df_target[df_target.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
+    scaler = preprocessing.StandardScaler().fit(features_target)
+    df_std_target = pd.DataFrame(scaler.transform(features_target), columns = list(features_target))
+    
+    df_std_target['Evadido'] = df_target.Evadido
+    df_std_target['CodigoDisciplina'] = df_target.CodigoDisciplina
+    df_std_target['CodigoTurma'] = df_target.CodigoTurma
+    df_std_target['PeriodoLetivo'] = df_target.PeriodoLetivo
+else:
+    df_std_target = df_target
+#--------------------------------------
 
-scaler = preprocessing.StandardScaler().fit(features)
+if (plot_var_cov == True):
+    graficos.plot_corr_matrix(df_std_target.corr(), 'Correlação [' + t_disciplina + ']')
+    graficos.plot_corr_matrix(df_std_target.cov(), 'Covariância [' + t_disciplina + ']')
 
-train_df_std = pd.DataFrame(scaler.transform(features), columns = list(features))
+#Embaralha dataframe normalizado
+df_normalized_target = shuffle(df_std_target)
 
-#features_zscore = train_df[train_df.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
-#train_df_std = pd.DataFrame(scaler.transform(features_zscore), columns = list(features_zscore))
+#Cross-validation
+cm_final_target = np.matrix('0 0; 0 0')
 
-#.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido']) #list(features)
-
-#pd.DataFrame(scaler.transform(train_df), columns = features_zscore, copy = false)
-"""
-
-
-"""
-#Embaralha dataset
-#train_df = shuffle(train_df)
-
-#Seleciona todas as colunas, exceto a coluna Evadido e outras que são irrelevantes
-features = train_df[train_df.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
-
-
-#features_columns.remove('Assignment_Post_Quantidade_Somado')
-print(features_columns)
-features_normalized = pd.DataFrame(scaler.transform(features), columns = features_columns)
-
-print('---- APOS CALCULO zScore ---------')
-print(features_normalized.head(5))
-print('-----------------------------------')
-
-
-target = train_df.Evadido
-
-print('*****************************************************')
-print('Features used to predict:')
-#print(features_normalized.info())
-print('*****************************************************')
-
-#treina
-dt.fit(features_normalized, target)
-
-print('Score:')
-print(dt.score(X = features_normalized, y = target))
-                      
-#features_test = test_df.loc[:, test_df.columns != 'Evadido']
-
-#clf.predict(features_test)
-
-#print(clf.score(X = features_test, y = target))
-"""
-
+#Separa os dados de teste do atributo de predição
+features_test_target = df_normalized_target[df_normalized_target.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
+target_test_target = df_normalized_target.Evadido
+    
+predicted_target = dt.predict(features_test_target)
+    
+cm_final_target = confusion_matrix(target_test_target, predicted_target)
+    
+#Plota a matriz de confusão para o modelo
+util.show_confusion_matrix(cm_final_target, class_labels=['Insucesso', 'Sucesso'])

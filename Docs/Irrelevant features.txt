@@ -1,2 +1,2 @@
-Colunas excluídas
-A,B,D,E,F,G,I,K,M,N,O,R,T,W,Y,AA,AC,AE,AG,AI,AK,AM,AO,AQ,AS,AU,AW,AY,BA,BC,BE,BG
+﻿Colunas excluídas
+A,B,D,E,F,G,I,K,M,N,O,P,R,T,W,Y,AA,AC,AE,AG,AI,AK,AM,AO,AQ,AS,AU,AW,AY,BA,BC,BE,BG,BI

@@ -45,9 +45,19 @@ else:
 #--------------------------------------
 
 if (plot_var_cov == True):
-    graficos.plot_corr_matrix(df_std.corr(), 'Correlação [' + s_disciplina + ']')
+    #graficos.plot_corr_matrix(df_std.corr(), 'Correlação [' + s_disciplina + ']')
     graficos.plot_corr_matrix(df_std.cov(), 'Covariância [' + s_disciplina + ']')
-
+    
+    #Cria matriz identidade
+    ID_S = np.eye(len(list(df_std)))
+    C_S = df_std.corr() + ID_S
+    graficos.plot_corr_matrix(C_S, 'Cs [' + s_disciplina + ']')
+    
+    #df_std = df_std * (C_S**(-1/2))
+    #df_std = df_std * (C_S**4)#np.sqrt(C_T)
+    #print(df_std.describe())
+    print(C_S.describe())
+    graficos.plot_corr_matrix(df_std.cov(), 'Covariância APÓS AJUSTE[' + s_disciplina + ']')
 
 #Embaralha dataframe normalizado
 df_normalized = shuffle(df_std)

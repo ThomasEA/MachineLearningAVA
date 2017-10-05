@@ -12,6 +12,9 @@ import matplotlib
 import numpy as np
 import itertools
 import pandas as pd
+
+import graficos as graficos
+
 from sklearn import preprocessing
 
 matplotlib.style.use('ggplot')
@@ -247,6 +250,8 @@ def clean_data(df, standardize=True):
         features = df[df.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
         scaler = preprocessing.StandardScaler().fit(features)
         df_std = pd.DataFrame(scaler.transform(features), columns = list(features))
+
+        graficos.plot_corr_matrix(df_std.cov(), 'CCCCCCCovariância')
         
         df_std['Evadido'] = df.Evadido
         df_std['CodigoDisciplina'] = df.CodigoDisciplina
@@ -255,6 +260,7 @@ def clean_data(df, standardize=True):
     else:
         df_std = df
     #--------------------------------------
+
     return df_std.copy();
 
 def standardize(df):
@@ -268,26 +274,111 @@ def standardize(df):
     df_std['PeriodoLetivo'] = df.PeriodoLetivo
     return df_std.copy();
 
-def correlation_alignment(df_s, df_t):
+
+def covariancia_mais_diag(df, lambda_par=1):
+    df_ = df.cov()
+    df_.replace(np.inf, 0,inplace=True)
+    df_.replace(np.nan, 0,inplace=True)
+    ID_S = np.eye(len(list(df_)))
+    np.fill_diagonal(ID_S, lambda_par)
+    return df_ + ID_S;
+
+def whitening_values(df, c):
+    try:
+        c = np.power(c,-1/2)
+        c.replace(np.inf, 0,inplace=True)
+        c.replace(np.nan, 0,inplace=True)
+        df = df.dot(c)
+        df.replace(np.inf, 0,inplace=True)
+        df.replace(np.nan, 0,inplace=True)
+    except RuntimeWarning:
+        print("Errrrrrro: %s", str(c))
+    return df;
+
+def recolor_values(df, c):
+    c = np.power(c,0.5)
+    c.replace(np.inf, 0,inplace=True)
+    c.replace(np.nan, 0,inplace=True)
+    df = df.dot(c)
+    df.replace(np.inf, 0,inplace=True)
+    df.replace(np.nan, 0,inplace=True)
+    return df;
+
+
+def correlation_alignment_old(df_s, df_t, lambda_par=1):
     
     df_s_tmp = df_s[df_s.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
     df_t_tmp = df_t[df_t.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
     
     ID_S = np.eye(len(list(df_s_tmp)))
+    np.fill_diagonal(ID_S, lambda_par)
     C_S = df_s_tmp.cov() + ID_S
-
-    print(C_S)
-                    
+    #np.nan_to_num(C_S, copy=False)
+    
+    #C_S = (C_S**(-1/2))
+    
+    #df_s_tmp = np.dot(df_s_tmp,C_S)
+    
+    #np.nan_to_num(df_s_tmp, copy=False)
+    
+    return C_S;
+"""
     ID_T = np.eye(len(list(df_t_tmp)))
-    C_T = df_t_tmp.cov() + ID_T
+    np.fill_diagonal(ID_T, lambda_par)
+    C_T = df_t_tmp.corr() + ID_T
+    np.nan_to_num(C_T, copy=False)
     
-    #df_s_tmp = df_s_tmp * (C_S**(-1/2))
-    df_s_tmp = df_s_tmp * (C_T**(1/2))
-    """
-    df_s_tmp['Evadido'] = df_s.Evadido
-    df_s_tmp['CodigoDisciplina'] = df_s.CodigoDisciplina
-    df_s_tmp['CodigoTurma'] = df_s.CodigoTurma
-    df_s_tmp['PeriodoLetivo'] = df_s.PeriodoLetivo
+    df_s_tmp = df_s_tmp * (C_S**(-1/2))
+"""    
     
-    return df_s_tmp.copy();
-    """
+""" 
+    #df_s_tmp = df_s_tmp * (C_T**(1/2))
+
+    #df_s_tmp['Evadido'] = df_s.Evadido
+    #df_s_tmp['CodigoDisciplina'] = df_s.CodigoDisciplina
+    #df_s_tmp['CodigoTurma'] = df_s.CodigoTurma
+    #df_s_tmp['PeriodoLetivo'] = df_s.PeriodoLetivo
+    
+    #return df_s_tmp.copy();
+"""
+
+
+def correlation_alignment(df_s, df_t, lambda_par=1):
+    
+    df_s_tmp = df_s[df_s.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])].copy()
+    df_t_tmp = df_t[df_t.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])].copy()
+    
+    graficos.plot_corr_matrix(df_s_tmp.cov(), 'CORAL - Ds - Covariância Original')
+    graficos.plot_corr_matrix(df_t_tmp.cov(), 'CORAL - Ts - Covariância Original')
+    
+    df_s_cov = covariancia_mais_diag(df_s_tmp, lambda_par=lambda_par)
+    
+    graficos.plot_corr_matrix(df_s_cov.cov(), 'CORAL - Ds - Covariância + Identidade')
+    
+    df_t_cov = covariancia_mais_diag(df_t_tmp, lambda_par=lambda_par)
+
+    graficos.plot_corr_matrix(df_t_cov.cov(), 'CORAL - Ts - Covariância + Identidade')
+    
+    df_s_ = whitening_values(df_s_tmp, df_s_cov)
+    
+    graficos.plot_corr_matrix(df_s_.cov(), 'CORAL - Ds - Covariancia Whitening')
+    
+    df_s_ = recolor_values(df_s_tmp, df_t_cov)
+    
+    graficos.plot_corr_matrix(df_s_.cov(), 'CORAL - Ds - Covariancia Re-color')
+    
+    df_s_['Evadido'] = df_s.Evadido
+    df_s_['CodigoDisciplina'] = df_s.CodigoDisciplina
+    df_s_['CodigoTurma'] = df_s.CodigoTurma
+    df_s_['PeriodoLetivo'] = df_s.PeriodoLetivo
+    
+    return df_s_;
+
+"""
+gx_mais_diag.replace(np.inf, 0,inplace=True)
+gx_mais_diag.replace(np.nan, 0,inplace=True)
+gx_power = np.power(gx_mais_diag,-0.5)
+gx_sqrt = np.power(gx_power,0.5)
+gx_sqrt.replace(np.inf, 0,inplace=True)
+gx_sqrt.replace(np.nan, 0,inplace=True)
+"""

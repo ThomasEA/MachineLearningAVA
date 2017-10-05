@@ -18,7 +18,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn import preprocessing
 from sklearn.utils import shuffle
 
-normalizar = False
+normalizar = True
 plot_var_cov = True
 
 s_disciplina = 'rac_logico'

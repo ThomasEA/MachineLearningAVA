@@ -11,6 +11,8 @@ Created on Thu Oct  5 05:58:49 2017
 """
 
 # -*- coding: utf-8 -*-
+from scipy import *
+
 import numpy as np
 import pandas as pd
 import util as util
@@ -28,19 +30,20 @@ plot_var_cov = True
 
 modulo = '3'
 s_disciplina = 'rac_logico'
-t_disciplina = 'mat_adm'
+#s_disciplina = 'mat_adm'
 
+df_s_r = pd.read_csv('../Week 3/m' + modulo + '_' + s_disciplina + '_ext_reduzido.CSV', sep=';')
 df_s = pd.read_csv('../Week 3/m' + modulo + '_' + s_disciplina + '_ext.CSV', sep=';')
 
 #Limpa e organiza algumas features e normaliza com z-score
-df_std = util.clean_data(df_s, normalizar)
+df_s_reduzido = util.clean_data(df_s_r, normalizar)
+df_s_std = util.clean_data(df_s, normalizar)
 
-if (plot_var_cov == True):
-    #graficos.plot_corr_matrix(df_std.corr(), 'Correlação [' + s_disciplina + ']')
-    graficos.plot_corr_matrix(df_std.cov(), 'Covariância [' + s_disciplina + ']')
+df_s_reduzido = util.correlation_alignment(df_s_reduzido, df_s_std,1)
 
+"""
 #Embaralha dataframe normalizado
-df_normalized = shuffle(df_std)
+df_normalized = shuffle(df_s_std)
 
 #Importando e configurando classificador (DecisionTree)
 from sklearn.tree import DecisionTreeClassifier
@@ -65,7 +68,7 @@ for key in folds.groups.keys():
     fold_teste = folds.get_group(name=key).copy()
     fold_treino = folds.filter(lambda x: x.name!=key).copy()
     
-    f = util.correlation_alignment(fold_treino, fold_teste)
+    fold_treino = util.correlation_alignment(fold_treino, fold_teste,1)
     
     qtd_ex_teste = len(fold_teste)
     qtd_ex_treino = len(fold_treino)
@@ -90,7 +93,7 @@ for key in folds.groups.keys():
 
 #Plota a matriz de confusão para o modelo
 util.show_confusion_matrix(cm_final, class_labels=['Insucesso', 'Sucesso'])
-
+"""
 
 """
 #Cria matriz identidade

@@ -29,19 +29,20 @@ normalizar = True
 plot_var_cov = True
 
 modulo = '3'
-s_disciplina = 'rac_logico'
+s_disciplina = 'logica'
 #s_disciplina = 'mat_adm'
 
-df_s_r = pd.read_csv('../Week 3/m' + modulo + '_' + s_disciplina + '_ext_reduzido.CSV', sep=';')
-df_s = pd.read_csv('../Week 3/m' + modulo + '_' + s_disciplina + '_ext.CSV', sep=';')
+df_s = pd.read_csv('../Week 3/m' + modulo + '_' + s_disciplina + '_ext_2012_01.csv', sep=',')
+df_t = pd.read_csv('../Week 3/m' + modulo + '_' + s_disciplina + '_ext_2012_02_2014_01.csv', sep=',')
 
 #Limpa e organiza algumas features e normaliza com z-score
-df_s_reduzido = util.clean_data(df_s_r, normalizar)
-df_s_std = util.clean_data(df_s, normalizar)
+df_s_std = util.clean_data(df_s, normalizar, plot_cov=False, title="Clean Data - Covariancia (Ds)")
+df_t_std = util.clean_data(df_t, normalizar, plot_cov=False, title="Clean Data - Covariancia (Dt)")
 
-df_s_reduzido = util.correlation_alignment(df_s_reduzido, df_s_std,1)
+df_s_std = util.correlation_alignment(df_s_std, df_t_std,1)
 
-"""
+graficos.plot_cov_matrix(df_s_std,'Ds apos adaptaçao')
+
 #Embaralha dataframe normalizado
 df_normalized = shuffle(df_s_std)
 
@@ -68,7 +69,7 @@ for key in folds.groups.keys():
     fold_teste = folds.get_group(name=key).copy()
     fold_treino = folds.filter(lambda x: x.name!=key).copy()
     
-    fold_treino = util.correlation_alignment(fold_treino, fold_teste,1)
+    #fold_treino = util.correlation_alignment(fold_treino, fold_teste,1)
     
     qtd_ex_teste = len(fold_teste)
     qtd_ex_treino = len(fold_treino)

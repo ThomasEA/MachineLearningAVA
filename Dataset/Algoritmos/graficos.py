@@ -11,9 +11,27 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.ensemble import ExtraTreesClassifier
+
+def feature_importance(X, y, model):
+    #model = ExtraTreesClassifier()
+    model.fit(X, y)
+    importances = model.feature_importances_
+    
+    indices = np.argsort(importances)[::-1]
+
+    plt.figure()
+    plt.title("Feature selection")
+    plt.bar(range(X.shape[1]), importances[indices], color="gray", align="center")
+    plt.xticks(range(X.shape[1]), X.columns, rotation = 90)
+    
+    plt.errorbar(range(X.shape[1]), importances[indices], capsize=5, capthick=0.5, fmt=' ', linewidth=3, elinewidth=1, ecolor='blue')
+    #plt.errorbar(range(X.shape[1]), importances[indices], yerr=std[indices], capsize=5, capthick=0.5, fmt=' ', linewidth=3, elinewidth=1, ecolor='blue')
+    plt.xlim([-1, X.shape[1]])
+    plt.show()
 
 def plot_cov_matrix(df_s, title='', calc_cov=True):
-    df_s_tmp = df_s[df_s.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
+    df_s_tmp = df_s[df_s.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo', 'NumeroModulo','Evadido'])]
     
     if (calc_cov==True):
         corr = df_s_tmp.cov()

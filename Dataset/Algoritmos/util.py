@@ -17,9 +17,8 @@ import graficos as graficos
 
 from sklearn import preprocessing
 
-
-
 matplotlib.style.use('ggplot')
+
 
 def calcular_z_score(dataframe, columns):
     df_ret = dataframe
@@ -249,7 +248,7 @@ def clean_data(df, standardize=True, plot_cov=True, title="Clean Data - Covarian
     #Calcular z-Score para algumas features
     #--------------------------------------
     if (standardize==True):
-        features = df[df.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
+        features = df[df.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','NumeroModulo','Evadido'])]
         scaler = preprocessing.StandardScaler().fit(features)
         df_std = pd.DataFrame(scaler.transform(features), columns = list(features))
 
@@ -264,8 +263,7 @@ def clean_data(df, standardize=True, plot_cov=True, title="Clean Data - Covarian
     if (plot_cov==True):
         graficos.plot_cov_matrix(df_std, title)
 
-
-    return df_std.copy();
+    return df_std;
 
 def standardize(df):
     features = df[df.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]

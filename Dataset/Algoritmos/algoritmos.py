@@ -30,7 +30,7 @@ def __decision_tree(df_s, df_t, dt):
     dt.fit(features, target)
     
     #Separa os dados de teste do atributo de predição
-    features_test = df_t[df_t.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','Evadido'])]
+    features_test = df_t[df_t.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','NumeroModulo','Evadido'])]
     target_test = df_t.Evadido
     
     predicted = dt.predict(features_test)
@@ -50,7 +50,7 @@ def predict_decision_tree(df_source, df_test=None, group_fold_column=None):
         cm_final = cm_final + __decision_tree(df_source, df_test, dt)
     else:
         #Separa os folds por turma
-        folds = util.sep_folds(df_source, 'CodigoTurma')
+        folds = util.sep_folds(df_source, group_fold_column)
         
         qtd_folds = len(folds.groups)
     
@@ -62,5 +62,12 @@ def predict_decision_tree(df_source, df_test=None, group_fold_column=None):
             
             #fold_treino = util.correlation_alignment(fold_treino, fold_teste,1)
             cm_final = cm_final + __decision_tree(fold_treino, fold_teste, dt)
-
+        
+        #Separa os dados de teste do atributo de predição
+        features_test = df_test[df_test.columns.difference(['CodigoDisciplina','CodigoTurma','PeriodoLetivo','NumeroModulo','Evadido'])]
+        target_test = df_test.Evadido
+    
+        predicted = dt.predict(features_test)
+    
+        cm_final = confusion_matrix(target_test, predicted);
     return cm_final;        

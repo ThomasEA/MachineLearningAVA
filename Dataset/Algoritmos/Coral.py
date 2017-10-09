@@ -94,17 +94,3 @@ for key in folds.groups.keys():
 
 #Plota a matriz de confusão para o modelo
 util.show_confusion_matrix(cm_final, class_labels=['Insucesso', 'Sucesso'])
-"""
-
-"""
-#Cria matriz identidade
-    ID_S = np.eye(len(list(df_std)))
-    C_S = df_std.cov() + ID_S
-    #graficos.plot_corr_matrix(C_S, 'Cs [' + s_disciplina + ']')
-    
-    df_std = df_std * (C_S**(-1/2))
-    df_std = df_std * (C_S**(1/2))
-    #print(df_std.describe())
-    print(C_S.describe())
-    graficos.plot_corr_matrix(df_std.cov(), 'Covariância APÓS AJUSTE[' + s_disciplina + ']')
-"""

@@ -9,10 +9,19 @@ Modelo preditivo padrão
     - Balanceamento de classes
 """
 import pandas as pd
-
+import numpy as np
 import filter as filter
+import util as util
+import algoritmos as algoritmos
+import graficos as graficos
 
 from sklearn.model_selection import StratifiedKFold
+#Importando e configurando classificador (DecisionTree)
+from sklearn.tree import DecisionTreeClassifier
+#Importando gerador de parametros otimizados
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
 
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
@@ -45,20 +54,37 @@ df_s, df_t = filter.filter_dataset(
                             periodo_letivo_source, 
                             periodo_letivo_test)
 
+clf_param = {'max_depth': range(3,10)}
+clf = DecisionTreeClassifier()
+
+model = GridSearchCV(clf, clf_param)
+
 skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=12)
+
 i = 1
+
+cm_final = np.matrix('0 0; 0 0')
+
 for train, test in skf.split(df_s, df_s.Evadido):
-    y_pred = test.copy()
-    fold = df_s.ix[test]
     
+    fold_s = df_s.iloc[train]
+    target_s = fold_s.Evadido
     
     print('Fold: %d ' % i)
-    print('\tQtd. Registros: %d' % len(fold))
-    #df_s = df_s.loc[(df_s['Evadido'] == 1)]
-    #print(train)
-    print('\tSucesso.......: %d / %.2f%%' % (len(fold[fold.Evadido == 1]), len(fold[fold.Evadido == 1]) / len(fold) * 100))
-    print('\tInsucesso.....: %d / %.2f%%' % (len(fold[fold.Evadido == 0]), len(fold[fold.Evadido == 0]) / len(fold) * 100))
+    print('\tQtd. Registros: %d' % len(fold_s))
+    print('\tSucesso.......: %d / %.2f%%' % (len(fold_s[fold_s.Evadido == 1]), len(fold_s[fold_s.Evadido == 1]) / len(fold_s) * 100))
+    print('\tInsucesso.....: %d / %.2f%%' % (len(fold_s[fold_s.Evadido == 0]), len(fold_s[fold_s.Evadido == 0]) / len(fold_s) * 100))
     
-    #print(fold.head())
-    i+=1
+    model.fit(fold_s, target_s)
+    
+    #Separa os dados de teste do atributo de predição
+    fold_t = df_s.iloc[test]
+    target_t = fold_t.Evadido
+    
+    predicted = model.predict(fold_t)
+    
+    cm_final += confusion_matrix(target_t, predicted);
+    
+    i += 1
 
+util.show_confusion_matrix(cm_final, class_labels=['Insucesso', 'Sucesso'])

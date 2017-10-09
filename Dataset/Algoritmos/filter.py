@@ -55,8 +55,8 @@ def filter_dataset(df_original, modulo, disciplinas, disciplina, periodo_letivo_
     print('\tInsucesso.....: %d / %.2f%%' % (len(df_t[df_t.Evadido == 0]), len(df_t[df_t.Evadido == 0]) / len(df_t) * 100))
     
     #Como já fez o filtro, remove algumas colunas que não são mais necessárias
-    df_s = df_s.drop(['NumeroModulo','CodigoDisciplina','PeriodoLetivo'], axis=1)
-    df_t = df_t.drop(['NumeroModulo','CodigoDisciplina','PeriodoLetivo'], axis=1)
+    df_s = df_s.drop(['NumeroModulo','CodigoDisciplina','PeriodoLetivo','CodigoTurma'], axis=1)
+    df_t = df_t.drop(['NumeroModulo','CodigoDisciplina','PeriodoLetivo','CodigoTurma'], axis=1)
 
     df_s = df_s.reset_index(drop=True)
     df_t = df_t.reset_index(drop=True)
@@ -66,13 +66,11 @@ def filter_dataset(df_original, modulo, disciplinas, disciplina, periodo_letivo_
     df_s_std = pd.DataFrame(scaler.transform(df_s), columns = list(df_s))
 
     df_s_std['Evadido'] = df_s.Evadido
-    df_s_std['CodigoTurma'] = df_s.CodigoTurma
 
     scaler = preprocessing.StandardScaler().fit(df_t)
     df_t_std = pd.DataFrame(scaler.transform(df_t), columns = list(df_t))
 
     df_t_std['Evadido'] = df_t.Evadido
-    df_t_std['CodigoTurma'] = df_t.CodigoTurma
     
     return df_s_std, df_t_std
     

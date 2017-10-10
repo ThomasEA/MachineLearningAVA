@@ -65,13 +65,14 @@ i = 1
 
 cm_final = np.matrix('0 0; 0 0')
 
-#Cria um Dataframe sem a coluna Evadido para ser utilizada no 
-df_s_cv = df_s[df_s.columns.difference(['Evadido'])].copy()
+#Cria um Dataframe sem a coluna Evadido para ser utilizada no CV
+df_source = df_s[df_s.columns.difference(['Evadido'])].copy()
+target = df_s.Evadido
 
-for train, test in skf.split(df_s_cv, df_s.Evadido):
+for train, test in skf.split(df_source, target):
 
-    fold_s = df_s_cv.iloc[train]
-    target_s = df_s.iloc[train].Evadido
+    fold_s = df_source.iloc[train]
+    target_s = target.iloc[train]
     
     print('Fold: %d' % i)
     print('\tQtd. Registros: %d' % len(fold_s))
@@ -81,8 +82,8 @@ for train, test in skf.split(df_s_cv, df_s.Evadido):
     model.fit(fold_s, target_s)
     
     #Separa os dados de teste do atributo de predição
-    fold_t   = df_s_cv.iloc[test]
-    target_t = df_s.iloc[test].Evadido
+    fold_t   = df_source.iloc[test]
+    target_t = target[test]
     
     predicted = model.predict(fold_t)
     

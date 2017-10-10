@@ -65,21 +65,24 @@ i = 1
 
 cm_final = np.matrix('0 0; 0 0')
 
-for train, test in skf.split(df_s, df_s.Evadido):
+#Cria um Dataframe sem a coluna Evadido para ser utilizada no 
+df_s_cv = df_s[df_s.columns.difference(['Evadido'])].copy()
+
+for train, test in skf.split(df_s_cv, df_s.Evadido):
+
+    fold_s = df_s_cv.iloc[train]
+    target_s = df_s.iloc[train].Evadido
     
-    fold_s = df_s.iloc[train]
-    target_s = fold_s.Evadido
-    
-    print('Fold: %d ' % i)
+    print('Fold: %d' % i)
     print('\tQtd. Registros: %d' % len(fold_s))
-    print('\tSucesso.......: %d / %.2f%%' % (len(fold_s[fold_s.Evadido == 1]), len(fold_s[fold_s.Evadido == 1]) / len(fold_s) * 100))
-    print('\tInsucesso.....: %d / %.2f%%' % (len(fold_s[fold_s.Evadido == 0]), len(fold_s[fold_s.Evadido == 0]) / len(fold_s) * 100))
+    print('\tSucesso.......: %d / %.2f%%' % (len(target_s[target_s == 1]), len(target_s[target_s == 1]) / len(target_s) * 100))
+    print('\tInsucesso.....: %d / %.2f%%' % (len(target_s[target_s == 0]), len(target_s[target_s == 0]) / len(target_s) * 100))
     
     model.fit(fold_s, target_s)
     
     #Separa os dados de teste do atributo de predição
-    fold_t = df_s.iloc[test]
-    target_t = fold_t.Evadido
+    fold_t   = df_s_cv.iloc[test]
+    target_t = df_s.iloc[test].Evadido
     
     predicted = model.predict(fold_t)
     

@@ -21,7 +21,7 @@ def filter_dataset(df_original, modulo, disciplinas, disciplina, periodo_letivo_
     df = df.loc[:, (df != 0).any(axis=0)]
 
     #Altera os valores da coluna Evadido para binário
-    df.Evadido = df.Evadido.map({'ReprEvadiu': 0, 'Sucesso': 1})
+    df.Evadido = df.Evadido.map({'ReprEvadiu': 1, 'Sucesso': 0})
 
     df_s = df.copy()
     df_t = df.copy()
@@ -46,13 +46,13 @@ def filter_dataset(df_original, modulo, disciplinas, disciplina, periodo_letivo_
     
     print('Período source..: ' + s_periodo)
     print('\tQtd. Registros: ' + str(len(df_s)))
-    print('\tSucesso.......: %d / %.2f%%' % (len(df_s[df_s.Evadido == 1]), len(df_s[df_s.Evadido == 1]) / len(df_s) * 100))
-    print('\tInsucesso.....: %d / %.2f%%' % (len(df_s[df_s.Evadido == 0]), len(df_s[df_s.Evadido == 0]) / len(df_s) * 100))
+    print('\tSucesso.......: %d / %.2f%%' % (len(df_s[df_s.Evadido == 0]), len(df_s[df_s.Evadido == 0]) / len(df_s) * 100))
+    print('\tInsucesso.....: %d / %.2f%%' % (len(df_s[df_s.Evadido == 1]), len(df_s[df_s.Evadido == 1]) / len(df_s) * 100))
     
     print('Período test....: ' + t_periodo)
     print('\tQtd. Registros: ' + str(len(df_t)))
-    print('\tSucesso.......: %d / %.2f%%' % (len(df_t[df_t.Evadido == 1]), len(df_t[df_t.Evadido == 1]) / len(df_t) * 100))
-    print('\tInsucesso.....: %d / %.2f%%' % (len(df_t[df_t.Evadido == 0]), len(df_t[df_t.Evadido == 0]) / len(df_t) * 100))
+    print('\tSucesso.......: %d / %.2f%%' % (len(df_t[df_t.Evadido == 0]), len(df_t[df_t.Evadido == 0]) / len(df_t) * 100))
+    print('\tInsucesso.....: %d / %.2f%%' % (len(df_t[df_t.Evadido == 1]), len(df_t[df_t.Evadido == 1]) / len(df_t) * 100))
     
     #Como já fez o filtro, remove algumas colunas que não são mais necessárias
     df_s = df_s.drop(['NumeroModulo','CodigoDisciplina','PeriodoLetivo','CodigoTurma'], axis=1)

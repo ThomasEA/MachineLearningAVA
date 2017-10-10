@@ -12,6 +12,8 @@ import pandas as pd
 import numpy as np
 import filter as filter
 import util as util
+import coral as coral
+
 import algoritmos as algoritmos
 import graficos as graficos
 
@@ -44,8 +46,7 @@ t_periodo = str(periodo_letivo_test)
 #Carrega dataset
 df = pd.read_csv('../dataset_m3_m6.csv', sep=';')
 
-#Filtra o dataset conforme a configuração selecionada e faz alguns ajustes no
-#dataset
+#Filtra o dataset conforme a configuração selecionada e faz alguns ajustes no dataset
 df_s, df_t = filter.filter_dataset(
                             df, 
                             modulo, 
@@ -53,6 +54,8 @@ df_s, df_t = filter.filter_dataset(
                             disciplina, 
                             periodo_letivo_source, 
                             periodo_letivo_test)
+
+df_s = coral.correlation_alignment(df_s, df_t)
 
 clf_param = {'max_depth': range(3,10)}
 clf = DecisionTreeClassifier()
@@ -66,7 +69,7 @@ i = 1
 cm_final = np.matrix('0 0; 0 0')
 
 #Cria um Dataframe sem a coluna Evadido para ser utilizada no CV
-df_source = df_s[df_s.columns.difference(['Evadido'])].copy()
+df_source = df_s[df_s.columns.difference(['Evadido'])]
 target = df_s.Evadido
 
 for train, test in skf.split(df_source, target):
@@ -76,8 +79,8 @@ for train, test in skf.split(df_source, target):
     
     print('Fold: %d' % i)
     print('\tQtd. Registros: %d' % len(fold_s))
-    print('\tSucesso.......: %d / %.2f%%' % (len(target_s[target_s == 1]), len(target_s[target_s == 1]) / len(target_s) * 100))
-    print('\tInsucesso.....: %d / %.2f%%' % (len(target_s[target_s == 0]), len(target_s[target_s == 0]) / len(target_s) * 100))
+    print('\tSucesso.......: %d / %.2f%%' % (len(target_s[target_s == 0]), len(target_s[target_s == 0]) / len(target_s) * 100))
+    print('\tInsucesso.....: %d / %.2f%%' % (len(target_s[target_s == 1]), len(target_s[target_s == 1]) / len(target_s) * 100))
     
     model.fit(fold_s, target_s)
     
@@ -91,4 +94,14 @@ for train, test in skf.split(df_source, target):
     
     i += 1
 
-util.show_confusion_matrix(cm_final, class_labels=['Insucesso', 'Sucesso'])
+util.show_confusion_matrix(cm_final, class_labels=['Sucesso', 'Insucesso'])
+
+#Separa os dados de teste do atributo de predição
+features_test = df_t[df_t.columns.difference(['Evadido'])]
+target_test = df_t.Evadido
+
+predicted = model.predict(features_test)
+
+cm_final = confusion_matrix(target_test, predicted);
+
+util.show_confusion_matrix(cm_final, class_labels=['Sucesso', 'Insucesso'])

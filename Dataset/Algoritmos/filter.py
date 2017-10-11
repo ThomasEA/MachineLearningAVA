@@ -11,7 +11,7 @@ Métodos para filtragem de datasets
 import pandas as pd
 from sklearn import preprocessing
 
-def filter_dataset(df_original, modulo, disciplinas, disciplina, periodo_letivo_s, periodo_letivo_t):
+def filter_dataset(df_original, modulo, disciplinas, disciplina, periodo_letivo_s, periodo_letivo_t, feature_normalization=True):
     
     print('Total registros geral: ' + str(len(df_original)))
     print('Disciplina......: ' + disciplinas[disciplina] + ' / Módulo: ' + ('Todos' if modulo == '0' else str(modulo)))
@@ -61,16 +61,21 @@ def filter_dataset(df_original, modulo, disciplinas, disciplina, periodo_letivo_
     df_s = df_s.reset_index(drop=True)
     df_t = df_t.reset_index(drop=True)
     
-    #Computa o Z-Score para o dataset
-    scaler = preprocessing.StandardScaler().fit(df_s)
-    df_s_std = pd.DataFrame(scaler.transform(df_s), columns = list(df_s))
-
-    df_s_std['Evadido'] = df_s.Evadido
-
-    scaler = preprocessing.StandardScaler().fit(df_t)
-    df_t_std = pd.DataFrame(scaler.transform(df_t), columns = list(df_t))
-
-    df_t_std['Evadido'] = df_t.Evadido
+    if (feature_normalization==True):
+        #Computa o Z-Score para o dataset
+        scaler = preprocessing.StandardScaler().fit(df_s)
+        df_s_std = pd.DataFrame(scaler.transform(df_s), columns = list(df_s))
     
-    return df_s_std, df_t_std
+        df_s_std['Evadido'] = df_s.Evadido
+    
+        scaler = preprocessing.StandardScaler().fit(df_t)
+        df_t_std = pd.DataFrame(scaler.transform(df_t), columns = list(df_t))
+    
+        df_t_std['Evadido'] = df_t.Evadido
+                
+        return df_s_std, df_t_std
+    else:
+        return df_s, df_t
+    
+    
     

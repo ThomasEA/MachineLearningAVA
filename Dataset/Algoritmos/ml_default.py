@@ -53,9 +53,10 @@ df_s, df_t = filter.filter_dataset(
                             disciplinas, 
                             disciplina, 
                             periodo_letivo_source, 
-                            periodo_letivo_test)
+                            periodo_letivo_test,
+                            feature_normalization=True)
 
-df_s = coral.correlation_alignment(df_s, df_t)
+df_s = coral.correlation_alignment(df_s, df_t, lambda_par=1)
 
 clf_param = {'max_depth': range(3,10)}
 clf = DecisionTreeClassifier()

@@ -11,8 +11,18 @@ import sys
 sys.path.insert(0, '../Algoritmos')
 
 import filter as filter
+import graficos as graficos
 import pandas as pd
+import numpy as np
 import seaborn as sns
+
+from sklearn.ensemble import ExtraTreesClassifier
+#Importando e configurando classificador (DecisionTree)
+from sklearn.tree import DecisionTreeClassifier
+#Importando gerador de parametros otimizados
+from sklearn.model_selection import GridSearchCV
+
+import matplotlib.pyplot as plt
 
 disciplinas = {
         50404: 'Fund. Proc. Administrativo', 
@@ -44,12 +54,25 @@ df_s, df_t = filter.filter_dataset(
                             periodo_letivo_source, 
                             periodo_letivo_test,
                             feature_normalization=True)
+cols = list(df_s)
 
-sns.distplot(df_s.Evadido)
-sns.distplot(df_t.Evadido)
+df_s['Origem']='Treino'
+df_t['Origem']='Teste'
+
+df_x = df_s.append(df_t, ignore_index=True)
+
+#df_x.set_index(["Origem"],inplace=True)
+    
+#df_x.plot(kind='bar',rot=90)
+
+df_x.boxplot(cols, by='Origem', grid=True)
+
+
+#sns.distplot(df_s.Evadido)
+#sns.distplot(df_t.Evadido)
 
 #g = sns.JointGrid(x="Forum_Quantidade_Post_Somado", y="Login_Quantidade", data=df_t) 
 #g.plot_joint(sns.regplot, order=2) 
 #g.plot_marginals(sns.distplot)
-
+#sns.set(style="ticks")
 #sns.pairplot(df_s)

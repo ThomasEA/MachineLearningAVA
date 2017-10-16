@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Oct  8 22:57:58 2017
+Created on Mon Oct 16 00:58:56 2017
 
 @author: Everton
 
@@ -25,10 +25,13 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
-disciplina = 60500
-modulo = 3 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
+disciplina = 60465
+modulo = 6 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
 periodo_letivo_source = [20120101,20120102,20120201,20120202,20130101]
 periodo_letivo_test   = [20130102,20130201,20130202,20140101,20140102]
 #-------------------------------------------------------
@@ -58,6 +61,31 @@ df_s, df_t = filter.filter_dataset(
 
 #df_s = coral.correlation_alignment(df_s, df_t, lambda_par=1)
 
+fig = plt.figure()#(figsize=(16,16))
+ax = fig.add_subplot(111, projection='3d')
+
+x_s =df_s.Login_Quantidade
+y_s =df_s.Log_Post_Quantidade_Somado
+z_s =df_s.Turno_TempoUsoTotal_Somado
+
+ax.scatter(x_s, y_s, z_s, c='r', marker='o')
+
+x_t =df_t.Login_Quantidade
+y_t =df_t.Log_Post_Quantidade_Somado
+z_t =df_t.Turno_TempoUsoTotal_Somado
+
+ax.scatter(x_t, y_t, z_t, c='b', marker='^')
+
+ax.set_xlabel('f0')
+ax.set_xlim(xmin=-5,xmax=5)
+ax.set_ylabel('f1')
+ax.set_ylim(ymin=-5,ymax=5)
+ax.set_zlabel('f2')
+
+plt.show()
+
+
+"""
 clf_param = {'max_depth': range(3,10)}
 clf = DecisionTreeClassifier()
 
@@ -106,3 +134,4 @@ predicted = model.predict(features_test)
 cm_final = confusion_matrix(target_test, predicted);
 
 util.show_confusion_matrix(cm_final, class_labels=['Sucesso', 'Insucesso'])
+"""

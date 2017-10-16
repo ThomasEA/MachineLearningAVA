@@ -30,10 +30,17 @@ def recolor_values(df, kernel):
     df = df.dot(c)
     return df;
 
-def correlation_alignment(df_s, df_t, lambda_par=1):
+def correlation_alignment(df_s, df_t, lambda_par=1, class_column='Evadido'):
     
-    df_s_tmp = df_s[df_s.columns.difference(['Evadido'])]
-    df_t_tmp = df_t[df_t.columns.difference(['Evadido'])]
+    if class_column in df_s:
+        df_s_tmp = df_s[df_s.columns.difference([class_column])]
+    else:
+        df_s_tmp = df_s
+    
+    if class_column in df_t:
+        df_t_tmp = df_t[df_t.columns.difference([class_column])]
+    else:
+        df_t_tmp = df_t
     
     graficos.plot_cov_matrix(df_s_tmp, 'CORAL - Ds - Covariância Original')
     graficos.plot_cov_matrix(df_t_tmp, 'CORAL - Ts - Covariância Original')
@@ -54,6 +61,7 @@ def correlation_alignment(df_s, df_t, lambda_par=1):
     
     graficos.plot_cov_matrix(df_s_, 'CORAL - Ds - Covariancia Re-color')
     
-    df_s_['Evadido'] = df_s.Evadido
+    if class_column in df_s:
+        df_s_[class_column] = df_s[class_column]
     
     return df_s_;

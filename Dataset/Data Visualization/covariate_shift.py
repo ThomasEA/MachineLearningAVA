@@ -33,7 +33,7 @@ disciplinas = {
 
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
-disciplina = 60465
+disciplina = 60500
 modulo = 3 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
 periodo_letivo_source = [20120101,20120102,20120201,20120202]
 periodo_letivo_test   = [20130101,20130102,20130201,20130202,20140101,20140102]

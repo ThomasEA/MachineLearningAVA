@@ -8,10 +8,25 @@ import sys
 sys.path.insert(0, '../Algoritmos')
 
 import coral as coral
+import util as util
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+from sklearn.model_selection import StratifiedKFold
+#Importando e configurando classificador (DecisionTree)
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
+#Importando gerador de parametros otimizados
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
+
+# for 0.18 version or newer, use:
+from sklearn.model_selection import cross_val_score
+from sklearn import preprocessing
+from sklearn import utils
 
 def randrange(n, vmin, vmax):
     '''
@@ -25,7 +40,7 @@ ax = fig.add_subplot(111, projection='3d')
 
 x_s =randrange(200,-0.7,0.7)
 y_s =randrange(200,-0.7,0.7)
-z_s =randrange(200,-5,5)
+z_s =randrange(200,-3,3)
 
 ax.scatter(x_s, y_s, z_s, c='r', marker='o')
 
@@ -35,16 +50,17 @@ z_t =randrange(100,-0.7,0.7)
 
 df_s = pd.DataFrame({'f0':x_s, 'f1': y_s, 'f2': z_s})
 df_t = pd.DataFrame({'f0':x_t, 'f1': y_t, 'f2': z_t})
-#df_s.to_csv('sint_source.csv', index=False)
+df_s.to_csv('sint_source.csv', index=False)
+df_t.to_csv('sint_test.csv', index=False)
 
 ax.scatter(x_t, y_t, z_t, c='b', marker='o')
 
-#df_c = coral.correlation_alignment(df_s, df_t, class_column='')
-#df_c.columns = ['f0','f1','f2']
+df_c = coral.correlation_alignment(df_s, df_t, class_column='')
+df_c.columns = ['f0','f1','f2']
 
-#df_c.to_csv('sint_coral.csv', index=False)
+df_c.to_csv('sint_coral.csv', index=False)
 
-#ax.scatter(df_c.f0, df_c.f1, df_c.f2, c='g', marker='^')
+ax.scatter(df_c.f0, df_c.f1, df_c.f2, c='g', marker='^')
 
 ax.set_xlabel('f0')
 ax.set_xlim(xmin=-5,xmax=5)
@@ -52,11 +68,5 @@ ax.set_ylabel('f1')
 ax.set_ylim(ymin=-5,ymax=5)
 ax.set_zlabel('f2')
 
-#plt.xlim(-5, 5)
-#plt.ylim(-5, 5)
-
-
 plt.show()
-
-
 

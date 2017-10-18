@@ -77,9 +77,9 @@ z_t =df_t.Turno_TempoUsoTotal_Somado
 ax.scatter(x_t, y_t, z_t, c='b', marker='^')
 
 ax.set_xlabel('f0')
-ax.set_xlim(xmin=-5,xmax=5)
+ax.set_xlim(xmin=-10,xmax=10)
 ax.set_ylabel('f1')
-ax.set_ylim(ymin=-5,ymax=5)
+ax.set_ylim(ymin=-10,ymax=10)
 ax.set_zlabel('f2')
 
 plt.show()

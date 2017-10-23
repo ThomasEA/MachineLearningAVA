@@ -78,7 +78,16 @@ def filter_dataset(df_original, modulo, disciplinas, disciplina, periodo_letivo_
         return df_s, df_t
     
     
-def filter_dataset_mult(df_original, disciplinas, modulo_s, modulo_t, disciplina_s, disciplina_t, periodo_letivo_s, periodo_letivo_t, feature_normalization=True):
+def filter_dataset_mult(df_original, 
+                        disciplinas, 
+                        modulo_s, 
+                        modulo_t, 
+                        disciplina_s, 
+                        disciplina_t, 
+                        periodo_letivo_s, 
+                        periodo_letivo_t, 
+                        features = None,
+                        feature_normalization=True):
     
     print('Total registros geral: ' + str(len(df_original)))
     
@@ -129,6 +138,10 @@ def filter_dataset_mult(df_original, disciplinas, modulo_s, modulo_t, disciplina
     #Como já fez o filtro, remove algumas colunas que não são mais necessárias
     df_s = df_s.drop(['NumeroModulo','CodigoDisciplina','PeriodoLetivo','CodigoTurma'], axis=1)
     df_t = df_t.drop(['NumeroModulo','CodigoDisciplina','PeriodoLetivo','CodigoTurma'], axis=1)
+
+    if features!=None:
+        df_s = df_s[features]
+        df_t = df_t[features]
 
     df_s = df_s.reset_index(drop=True)
     df_t = df_t.reset_index(drop=True)

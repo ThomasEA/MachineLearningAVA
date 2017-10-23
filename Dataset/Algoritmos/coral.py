@@ -61,6 +61,8 @@ def correlation_alignment(df_s, df_t, lambda_par=1, class_column='Evadido'):
     
     graficos.plot_cov_matrix(df_s_, 'CORAL - Ds - Covariancia Re-color')
     
+    df_s_.columns = df_s.columns.difference([class_column])
+    
     if class_column in df_s:
         df_s_[class_column] = df_s[class_column]
     

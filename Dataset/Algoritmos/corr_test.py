@@ -29,8 +29,8 @@ import matplotlib.pyplot as plt
 
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
-disciplina_s = 60465
-disciplina_t = 60463
+disciplina_s = 60500
+disciplina_t = 60500
 modulo_s = 6 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
 modulo_t = 6 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
 periodo_letivo_source = [20120101,20120102,20120201,20120202,20130101]
@@ -64,6 +64,8 @@ df_s, df_t = filter.filter_dataset_mult(
                             periodo_letivo_test,
                             features,
                             feature_normalization=True)
+
+df_s.boxplot(cols, by='Evadido', grid=True)
 
 df_s.to_csv('original_source.csv', index=False)
 

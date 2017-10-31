@@ -115,7 +115,7 @@ def show_confusion_matrix(C,class_labels=['0','1']):
     NN = tn+fp # Num negative examples
     N  = NP+NN
 
-    fig = plt.figure(figsize=(8,8))
+    fig = plt.figure(figsize=(6,6))
     ax  = fig.add_subplot(111)
     ax.imshow(C, interpolation='nearest', cmap=plt.cm.gray)
 
@@ -128,7 +128,7 @@ def show_confusion_matrix(C,class_labels=['0','1']):
     ax.plot([1.5,1.5],[-0.5,2.5], '-k', lw=2)
 
     # Set xlabels
-    ax.set_xlabel('Classe Predita', fontsize=16)
+    ax.set_xlabel('Classe Predita', fontsize=12)
     ax.set_xticks([0,1,2])
     ax.set_xticklabels(class_labels + [''])
     ax.xaxis.set_label_position('top')
@@ -137,7 +137,7 @@ def show_confusion_matrix(C,class_labels=['0','1']):
     ax.xaxis.set_label_coords(0.34,1.06)
 
     # Set ylabels
-    ax.set_ylabel('Classe real', fontsize=16, rotation=90)
+    ax.set_ylabel('Classe real', fontsize=12, rotation=90)
     ax.set_yticklabels(class_labels + [''],rotation=90)
     ax.set_yticks([0,1,2])
     ax.yaxis.set_label_coords(-0.09,0.65)
@@ -148,57 +148,57 @@ def show_confusion_matrix(C,class_labels=['0','1']):
             'Verdadeiro Negativo: %d\n(Num. Negativos: %d)'%(tn,NN),
             va='center',
             ha='center',
-            bbox=dict(fc='w',boxstyle='round,pad=1'))
+            bbox=dict(fc='w',boxstyle='round'))
 
     ax.text(0,1,
             'Falso Negativo: %d'%fn,
             va='center',
             ha='center',
-            bbox=dict(fc='w',boxstyle='round,pad=1'))
+            bbox=dict(fc='w',boxstyle='round'))
 
     ax.text(1,0,
             'Falso Positivo: %d'%fp,
             va='center',
             ha='center',
-            bbox=dict(fc='w',boxstyle='round,pad=1'))
+            bbox=dict(fc='w',boxstyle='round'))
 
 
     ax.text(1,1,
             'Verdadeiro Positivo: %d\n(Num. Positivos: %d)'%(tp,NP),
             va='center',
             ha='center',
-            bbox=dict(fc='w',boxstyle='round,pad=1'))
+            bbox=dict(fc='w',boxstyle='round'))
 
     # Fill in secondary metrics: accuracy, true pos rate, etc...
     ax.text(2,0,
             'Precision: %.2f'%(fp / (fp+tn+0.)),
             va='center',
             ha='center',
-            bbox=dict(fc='w',boxstyle='round,pad=1'))
+            bbox=dict(fc='w',boxstyle='round'))
 
     ax.text(2,1,
             'Precision: %.2f'%(tp / (tp+fn+0.)),
             va='center',
             ha='center',
-            bbox=dict(fc='w',boxstyle='round,pad=1'))
+            bbox=dict(fc='w',boxstyle='round'))
 
     ax.text(2,2,
             'Acurácia: %.2f'%((tp+tn+0.)/N),
             va='center',
             ha='center',
-            bbox=dict(fc='w',boxstyle='round,pad=1'))
+            bbox=dict(fc='w',boxstyle='round'))
 
     ax.text(0,2,
             'Recall: %.2f'%(1-fn/(fn+tn+0.)),
             va='center',
             ha='center',
-            bbox=dict(fc='w',boxstyle='round,pad=1'))
+            bbox=dict(fc='w',boxstyle='round'))
 
     ax.text(1,2,
             'Recall: %.2f'%(tp/(tp+fp+0.)),
             va='center',
             ha='center',
-            bbox=dict(fc='w',boxstyle='round,pad=1'))
+            bbox=dict(fc='w',boxstyle='round'))
 
 
     plt.tight_layout()

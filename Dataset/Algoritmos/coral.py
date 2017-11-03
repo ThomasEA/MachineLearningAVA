@@ -30,7 +30,7 @@ def recolor_values(df, kernel):
     df = df.dot(c)
     return df;
 
-def correlation_alignment(df_s, df_t, lambda_par=1, class_column='Evadido'):
+def correlation_alignment(df_s, df_t, lambda_par=1, class_column='Evadido', plot=False):
     
     if class_column in df_s:
         df_s_tmp = df_s[df_s.columns.difference([class_column])]
@@ -42,24 +42,29 @@ def correlation_alignment(df_s, df_t, lambda_par=1, class_column='Evadido'):
     else:
         df_t_tmp = df_t
     
-    graficos.plot_cov_matrix(df_s_tmp, 'CORAL - Ds - Covariância Original')
-    graficos.plot_cov_matrix(df_t_tmp, 'CORAL - Ts - Covariância Original')
+    if (plot==True):
+        graficos.plot_cov_matrix(df_s_tmp, 'CORAL - Ds - Covariância Original')
+        graficos.plot_cov_matrix(df_t_tmp, 'CORAL - Ts - Covariância Original')
     
     df_s_cov = covariancia_mais_diag(df_s_tmp, lambda_par=lambda_par)
     
-    graficos.plot_cov_matrix(df_s_cov, 'CORAL - Ds - Covariância + Identidade')
+    if (plot==True):
+        graficos.plot_cov_matrix(df_s_cov, 'CORAL - Ds - Covariância + Identidade')
     
     df_t_cov = covariancia_mais_diag(df_t_tmp, lambda_par=lambda_par)
 
-    graficos.plot_cov_matrix(df_t_cov, 'CORAL - Ts - Covariância + Identidade')
+    if (plot==True):
+        graficos.plot_cov_matrix(df_t_cov, 'CORAL - Ts - Covariância + Identidade')
     
     df_s_ = whitening_values(df_s_tmp, df_s_cov)
     
-    graficos.plot_cov_matrix(df_s_, 'CORAL - Ds - Covariancia Whitening')
+    if (plot==True):
+        graficos.plot_cov_matrix(df_s_, 'CORAL - Ds - Covariancia Whitening')
     
     df_s_ = recolor_values(df_s_, df_t_cov)
     
-    graficos.plot_cov_matrix(df_s_, 'CORAL - Ds - Covariancia Re-color')
+    if (plot==True):
+        graficos.plot_cov_matrix(df_s_, 'CORAL - Ds - Covariancia Re-color')
     
     df_s_.columns = df_s.columns.difference([class_column])
     

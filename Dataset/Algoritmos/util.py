@@ -276,6 +276,25 @@ def standardize(df):
     df_std['PeriodoLetivo'] = df.PeriodoLetivo
     return df_std.copy();
 
+def normalize(df, except_fields=None):
+    df = df.reset_index(drop=True)
+    
+    if (except_fields==None):
+        features = df.copy()
+    else:
+        features = df.copy()[df.columns.difference(except_fields)]
+    
+    scaler = preprocessing.StandardScaler().fit(features)
+    df_std = pd.DataFrame(scaler.transform(features), columns = list(features))
+    
+    if (except_fields!=None):
+    #    for f in except_fields:
+    #        df_std[f] = 
+        ret = pd.concat([df_std,df[except_fields]], axis=1)
+        return ret;
+    
+    return df_std;
+
 
 def covariancia_mais_diag(df, lambda_par=1):
     df_ = df.cov()

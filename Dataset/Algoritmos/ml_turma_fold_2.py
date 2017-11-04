@@ -53,10 +53,11 @@ features = {
         60500: ['Assignment_View_Quantidade_Somado', 'Turno_TempoUsoTotal_Somado', 'Log_View_Quantidade_Somado', 'Login_Quantidade', 'Resource_View_Tempo_Somado','Forum_TempoUso_Somado', 'Evadido','CodigoTurma']
     }
             
-classificador = 2
+classificador = 1
 use_coral = False
-use_normalization = False
-use_normalization_turma = True
+use_normalization = True
+coral_use_normalization = True
+use_normalization_turma = False
 shuf = True
 coral_lambda = 1
 #-------------------------------------------------------
@@ -120,40 +121,39 @@ result = pd.DataFrame()
 for name, fold in df_s_folds:
     fold_t = fold[features[disciplina_s]]
     
-    if (shuf==True):
-        fold_t = shuffle(fold_t)
-        
+    if (shuf==True): fold_t = shuffle(fold_t)
+
     target_t = fold_t.Evadido
-    fold_t = fold_t.loc[:, fold_t.columns != 'Evadido']
-    fold_t = fold_t.loc[:, fold_t.columns != 'CodigoTurma']
     
     if (use_normalization_turma == True):
-        scaler = preprocessing.StandardScaler().fit(fold_t)
-        fold_t_norm = pd.DataFrame(scaler.transform(fold_t), columns = list(fold_t))
+        #scaler = preprocessing.StandardScaler().fit(fold_t)
+        #fold_t_norm = pd.DataFrame(scaler.transform(fold_t), columns = list(fold_t))
+        fold_t_norm = util.normalize(fold_t, ['Evadido','CodigoTurma'])
     else:
         fold_t_norm = fold_t
-
+    
+    fold_t_norm = fold_t_norm.loc[:, fold_t_norm.columns != 'Evadido']
+    fold_t_norm = fold_t_norm.loc[:, fold_t_norm.columns != 'CodigoTurma']
+    
     fold_s = pd.DataFrame()
     
     #monta o dataset de treinamento
     for name_s, fold_stmp in df_s_folds:
         if (name_s != name):
-            fold_s = pd.concat([fold_s,fold_stmp])
+            if (use_normalization_turma == True):
+                f_norm = util.normalize(fold_stmp, ['Evadido','CodigoTurma'])
+            else:
+                f_norm = fold_stmp
+            
+            fold_s = pd.concat([fold_s,f_norm])
     
     fold_s = fold_s[features[disciplina_s]]
     
-    if (shuf==True):
-        fold_s = shuffle(fold_s)
+    if (shuf==True): fold_s = shuffle(fold_s)
         
     target_s = fold_s.Evadido
     fold_s = fold_s.loc[:, fold_s.columns != 'Evadido']
     fold_s = fold_s.loc[:, fold_s.columns != 'CodigoTurma']
-    
-    if (use_normalization_turma == True):
-        scaler = preprocessing.StandardScaler().fit(fold_s)
-        fold_s_norm = pd.DataFrame(scaler.transform(fold_s), columns = list(fold_s))
-    else:
-        fold_s_norm = fold_s
     
     print('\tFold: %d: [Treino %d registros]' % (i, len(fold_s)))
     print('\t\tSucesso: %d (%.2f%%) / Insucesso: %d (%.2f%%)' % 
@@ -169,7 +169,7 @@ for name, fold in df_s_folds:
            len(target_t[target_t == 1]), 
            len(target_t[target_t == 1]) / len(target_t) * 100))
     
-    model.fit(fold_s_norm, target_s)    
+    model.fit(fold_s, target_s)    
 
     predicted = model.predict(fold_t_norm)
     
@@ -187,6 +187,16 @@ for name, fold in df_s_folds:
     i += 1
 
 #---- CORAL ----#
+
+#df_c = filter.filter_ds_turma(
+#                            df,
+#                            disciplinas, 
+#                            modulo_s, 
+#                            disciplina_s, 
+#                            features[disciplina_s],
+#                            feature_normalization=coral_use_normalization)
+
+#df_s_folds = util.sep_folds(df_c,'CodigoTurma')
 
 model = None
 

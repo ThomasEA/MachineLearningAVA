@@ -55,9 +55,10 @@ features = {
             
 classificador = 1
 use_coral = False
-use_normalization = True
-coral_use_normalization = True
+use_normalization = False
+coral_use_normalization = False
 use_normalization_turma = False
+coral_use_normalization_turma = False
 shuf = True
 coral_lambda = 1
 #-------------------------------------------------------
@@ -126,8 +127,6 @@ for name, fold in df_s_folds:
     target_t = fold_t.Evadido
     
     if (use_normalization_turma == True):
-        #scaler = preprocessing.StandardScaler().fit(fold_t)
-        #fold_t_norm = pd.DataFrame(scaler.transform(fold_t), columns = list(fold_t))
         fold_t_norm = util.normalize(fold_t, ['Evadido','CodigoTurma'])
     else:
         fold_t_norm = fold_t
@@ -188,15 +187,17 @@ for name, fold in df_s_folds:
 
 #---- CORAL ----#
 
-#df_c = filter.filter_ds_turma(
-#                            df,
-#                            disciplinas, 
-#                            modulo_s, 
-#                            disciplina_s, 
-#                            features[disciplina_s],
-#                            feature_normalization=coral_use_normalization)
+cm_final = np.matrix('0 0; 0 0')
 
-#df_s_folds = util.sep_folds(df_c,'CodigoTurma')
+df_c = filter.filter_ds_turma(
+                            df,
+                            disciplinas, 
+                            modulo_s, 
+                            disciplina_s, 
+                            features[disciplina_s],
+                            feature_normalization=coral_use_normalization)
+
+df_s_folds = util.sep_folds(df_c,'CodigoTurma')
 
 model = None
 
@@ -217,42 +218,37 @@ for name, fold in df_s_folds:
     
     fold_t = fold[features[disciplina_s]]
     
-    if (shuf==True):
-        fold_t = shuffle(fold_t)
-        
-    target_t = fold_t.Evadido
-    fold_t = fold_t.loc[:, fold_t.columns != 'Evadido']
-    fold_t = fold_t.loc[:, fold_t.columns != 'CodigoTurma']
-    
-    #if (use_normalization_turma == True):
-    #    scaler = preprocessing.StandardScaler().fit(fold_t)
-    #    fold_t_norm = pd.DataFrame(scaler.transform(fold_t), columns = list(fold_t))
-    #else:
-    #    fold_t_norm = fold_t
-    fold_t_norm = fold_t
+    if (shuf==True): fold_t = shuffle(fold_t)
 
+    target_t = fold_t.Evadido
+
+    if (coral_use_normalization_turma == True):
+        fold_t_norm = util.normalize(fold_t, ['Evadido','CodigoTurma'])
+    else:
+        fold_t_norm = fold_t
+        
+    fold_t_norm = fold_t_norm.loc[:, fold_t_norm.columns != 'Evadido']
+    fold_t_norm = fold_t_norm.loc[:, fold_t_norm.columns != 'CodigoTurma']
+    
     fold_s = pd.DataFrame()
     
     #monta o dataset de treinamento
     for name_s, fold_stmp in df_s_folds:
         if (name_s != name):
-            fold_s = pd.concat([fold_s,fold_stmp])
+            if (coral_use_normalization_turma == True):
+                f_norm = util.normalize(fold_stmp, ['Evadido','CodigoTurma'])
+            else:
+                f_norm = fold_stmp
+            
+            fold_s = pd.concat([fold_s,f_norm])
     
     fold_s = fold_s[features[disciplina_s]]
     
-    if (shuf==True):
-        fold_s = shuffle(fold_s)
+    if (shuf==True): fold_s = shuffle(fold_s)
         
     target_s = fold_s.Evadido
     fold_s = fold_s.loc[:, fold_s.columns != 'Evadido']
     fold_s = fold_s.loc[:, fold_s.columns != 'CodigoTurma']
-    
-    #if (use_normalization_turma == True):
-    #    scaler = preprocessing.StandardScaler().fit(fold_s)
-    #    fold_s_norm = pd.DataFrame(scaler.transform(fold_s), columns = list(fold_s))
-    #else:
-    #    fold_s_norm = fold_s
-    fold_s_norm = fold_s
     
     print('\tFold: %d: [Treino %d registros]' % (i, len(fold_s)))
     print('\t\tSucesso: %d (%.2f%%) / Insucesso: %d (%.2f%%)' % 
@@ -268,7 +264,7 @@ for name, fold in df_s_folds:
            len(target_t[target_t == 1]), 
            len(target_t[target_t == 1]) / len(target_t) * 100))
 
-    fold_s_norm = coral.correlation_alignment(fold_s_norm, fold_t_norm, lambda_par=coral_lambda)
+    fold_s_norm = coral.correlation_alignment(fold_s, fold_t_norm, lambda_par=coral_lambda)
     
     model.fit(fold_s_norm, target_s)    
 
@@ -279,6 +275,8 @@ for name, fold in df_s_folds:
     result.set_value(i,'Coral',accuracy * 100)
     
     i += 1
+    
+util.show_confusion_matrix(cm_final, class_labels=['Sucesso', 'Insucesso'])
     
 #---- PLOT DO RESULTADO ----#
 
@@ -306,23 +304,29 @@ ax.set_yticks(minor_ticks, minor=True)
 ax.set_xticks(ind + width / 2)
 ax.set_xticklabels(result['Turma'])
 
-#b1 = ax.bar(ind, result['TreinoSucesso'], width)
-#b2 = ax.bar(ind + width, result['TreinoInsucesso'], width)
-#b3 = ax.bar(ind + (width*2), result['TesteSucesso'], width)
-#b4 = ax.bar(ind + (width*3), result['TesteInsucesso'], width)
+b1 = ax.bar(ind, result['TreinoSucesso'], width, color='#77b5e5')
+b2 = ax.bar(ind + width, result['TreinoInsucesso'], width, color='#0747b2')
+b3 = ax.bar(ind + (width*2), result['TesteSucesso'], width, color='#cebe6f')
+b4 = ax.bar(ind + (width*3), result['TesteInsucesso'], width, color='#a37f00')
 
 l1 = ax.plot(ind + (width*3) / 2, result['Acur'], '#0033cc', marker='X')
 l2 = ax.plot(ind + (width*3) / 2, result['Coral'], '#f44242', marker='X')
 
-l3 = ax.plot(ind + (width*3) / 2, result['TreinoDesbalanceamento'], '#ff6600', marker='D')
-l4 = ax.plot(ind + (width*3) / 2, result['TesteDesbalanceamento'], '#009933', marker='D')
+#l3 = ax.plot(ind + (width*3) / 2, result['TreinoDesbalanceamento'], '#ff6600', marker='D')
+#l4 = ax.plot(ind + (width*3) / 2, result['TesteDesbalanceamento'], '#009933', marker='D')
 
 #ax.legend((b1[0], b2[0], b3[0], b4[0], l1[0], l2[0]),
-#          ('Treino Sucesso %', 'Treino Insucesso %', 'Teste Sucesso %', 'Teste Insucesso %', 'Acur. Original %', 'Acur. CORAL %'), loc=2, bbox_to_anchor=(1.05, 1))
+#          ('Treino Sucesso', 'Treino Insucesso', 'Teste Sucesso', 'Teste Insucesso', 'Acur. Original', 'Acur. CORAL'), loc=2, bbox_to_anchor=(1.05, 1))
 
-ax.legend((l3[0], l4[0], l1[0], l2[0]),
-          ('Treino Desbal. %', 'Teste Desbal. %', 'Acur. Original %', 'Acur. CORAL %'), 
-          loc=4, bbox_to_anchor=(1.05, 1))
+ax.legend((b1[0], b2[0], b3[0], b4[0], l1[0], l2[0]),
+          ('Treino Sucesso', 'Treino Insucesso', 'Teste Sucesso', 'Teste Insucesso', 'Acur. Original', 'Acur. CORAL'),bbox_to_anchor=(0., 0., 1., -0.09),ncol=6,mode="expand", borderaxespad=0.)
+
+#plt.legend(, loc=3,
+#           )
+
+#ax.legend((l3[0], l4[0], l1[0], l2[0]),
+#          ('Treino Desbal. %', 'Teste Desbal. %', 'Acur. Original %', 'Acur. CORAL %'), 
+#          loc=4, bbox_to_anchor=(1.05, 1))
 
 plt.xticks(ind + (width*3) / 2)
 
@@ -331,6 +335,76 @@ ax.grid(which='both')
 # or if you want differnet settings for the grids:                               
 ax.grid(which='minor', alpha=0.4)                                                
 ax.grid(which='major', alpha=0.5)
+
+plt.show()
+
+
+#=== GRÁFICO ARTIGO ====#
+
+N = len(result)
+
+ind = np.arange(N)  # the x locations for the groups
+width = 0.20       # the width of the bars
+
+fig = plt.figure()                                                               
+ax = fig.add_subplot(1,1,1)  
+
+plt.title(disciplina_string)
+
+plt.ylabel('Acurácia')
+
+plt.xlabel('Turmas')
+
+major_ticks = np.arange(0, 101, 10)                                              
+minor_ticks = np.arange(0, 101, 2.5)
+
+ax.set_yticks(major_ticks)
+ax.set_yticks(minor_ticks, minor=True)
+
+ax.set_xticks(ind + width / 2)
+ax.set_xticklabels(result['Turma'])
+
+#b1 = ax.bar(ind, result['TreinoSucesso'], width, color='#77b5e5')
+#b2 = ax.bar(ind + width, result['TreinoInsucesso'], width, color='#0747b2')
+#b3 = ax.bar(ind + (width*2), result['TesteSucesso'], width, color='#cebe6f')
+#b4 = ax.bar(ind + (width*3), result['TesteInsucesso'], width, color='#a37f00')
+
+l1 = ax.bar(ind, result['Acur'], width, color='#0033cc', yerr=result['Acur'].std(ddof=1))
+l2 = ax.bar(ind + width, result['Coral'], width, color='#f44242', yerr=result['Coral'].std(ddof=1))
+#média
+ax.line(result['Coral'].mean(),color='g',linestyle='--')
+
+
+#l3 = ax.plot(ind + (width*3) / 2, result['TreinoDesbalanceamento'], '#ff6600', marker='D')
+#l4 = ax.plot(ind + (width*3) / 2, result['TesteDesbalanceamento'], '#009933', marker='D')
+
+#ax.legend((b1[0], b2[0], b3[0], b4[0], l1[0], l2[0]),
+#          ('Treino Sucesso', 'Treino Insucesso', 'Teste Sucesso', 'Teste Insucesso', 'Acur. Original', 'Acur. CORAL'), loc=2, bbox_to_anchor=(1.05, 1))
+
+#ax.legend((b1[0], b2[0], b3[0], b4[0], l1[0], l2[0]),
+#          ('Treino Sucesso', 'Treino Insucesso', 'Teste Sucesso', 'Teste Insucesso', 'Acur. Original', 'Acur. CORAL'),bbox_to_anchor=(0., 0., 1., -0.09),ncol=6,mode="expand", borderaxespad=0.)
+
+ax.set_ylim(ymin=40, ymax=100)
+
+ax.legend((l1[0], l2[0]),
+          ('Original', 'CORAL'),bbox_to_anchor=(0., 0., 1., -0.09),ncol=2, borderaxespad=0.)
+
+#plt.legend(, loc=3,
+#           )
+
+#ax.legend((l3[0], l4[0], l1[0], l2[0]),
+#          ('Treino Desbal. %', 'Teste Desbal. %', 'Acur. Original %', 'Acur. CORAL %'), 
+#          loc=4, bbox_to_anchor=(1.05, 1))
+
+plt.xticks(ind + width / 2)
+
+#ax.grid(which='both')                                                            
+
+# or if you want differnet settings for the grids:                               
+#ax.grid(which='minor', alpha=0.4)                                                
+ax.yaxis.grid(which="major", color='#000000', linestyle=':', linewidth=0.5)
+
+ax.yaxis.grid(True)
 
 plt.show()
 

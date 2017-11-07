@@ -40,7 +40,7 @@ plt.rcParams['figure.figsize'] = (11,7)
 
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
-disciplina_s = 60465
+disciplina_s = 60500
 disciplina_t = 60463
 modulo_s = 6 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
 modulo_t = 6 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
@@ -53,7 +53,7 @@ features = {
         60500: ['Assignment_View_Quantidade_Somado', 'Turno_TempoUsoTotal_Somado', 'Log_View_Quantidade_Somado', 'Login_Quantidade', 'Resource_View_Tempo_Somado','Forum_TempoUso_Somado', 'Evadido','CodigoTurma']
     }
             
-classificador = 2
+classificador = 3
 use_coral = False
 use_normalization = True
 coral_lambda = 1

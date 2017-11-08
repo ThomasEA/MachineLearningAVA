@@ -37,6 +37,10 @@ def sumarizar(i, disciplina, classificador, df, result):
 plt.style.use('seaborn-colorblind')
 plt.rcParams['figure.figsize'] = (11,7)
 
+use_normalization = False
+use_normalization_turma = True
+use_coral = True
+
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
 disciplina_s = 50404
@@ -63,16 +67,53 @@ classificadores = {
             3: 'SVM'
         }
 
-disciplina_string = str(disciplinas[disciplina_s])
-
 result = pd.DataFrame()
 
-d1 = mldisc.process(disciplina_s, modulo_s, 1, False, True, False)
+#-----------------------------------------
+disciplina_s = 50404
+disciplina_string = str(disciplinas[disciplina_s])
+d1 = mldisc.process(disciplina_s, modulo_s, 1, use_coral, use_normalization, use_normalization_turma)
 sumarizar(1, disciplina_string, classificadores[1], d1, result)
-d2 = mldisc.process(disciplina_s, modulo_s, 2, False, True, False)
+d2 = mldisc.process(disciplina_s, modulo_s, 2, use_coral, use_normalization, use_normalization_turma)
 sumarizar(1, disciplina_string, classificadores[2], d2, result)
-#d3 = mldisc.process(disciplina_s, modulo_s, 3, False, True, False)
-#sumarizar(1, disciplina_string, classificadores[3], d3, result)
+d3 = mldisc.process(disciplina_s, modulo_s, 3, use_coral, use_normalization, use_normalization_turma)
+sumarizar(1, disciplina_string, classificadores[3], d3, result)
+#-----------------------------------------
+"""
+#-----------------------------------------
+disciplina_s = 60463
+disciplina_string = str(disciplinas[disciplina_s])
+d1 = mldisc.process(disciplina_s, modulo_s, 1, use_coral, use_normalization, use_normalization_turma)
+sumarizar(2, disciplina_string, classificadores[1], d1, result)
+d2 = mldisc.process(disciplina_s, modulo_s, 2, use_coral, use_normalization, use_normalization_turma)
+sumarizar(2, disciplina_string, classificadores[2], d2, result)
+d3 = mldisc.process(disciplina_s, modulo_s, 3, use_coral, use_normalization, use_normalization_turma)
+sumarizar(2, disciplina_string, classificadores[3], d3, result)
+#-----------------------------------------
+
+#-----------------------------------------
+disciplina_s = 60465
+disciplina_string = str(disciplinas[disciplina_s])
+d1 = mldisc.process(disciplina_s, modulo_s, 1, use_coral, use_normalization, use_normalization_turma)
+sumarizar(3, disciplina_string, classificadores[1], d1, result)
+d2 = mldisc.process(disciplina_s, modulo_s, 2, use_coral, use_normalization, use_normalization_turma)
+sumarizar(3, disciplina_string, classificadores[2], d2, result)
+d3 = mldisc.process(disciplina_s, modulo_s, 3, use_coral, use_normalization, use_normalization_turma)
+sumarizar(3, disciplina_string, classificadores[3], d3, result)
+#-----------------------------------------
+"""
+#-----------------------------------------
+disciplina_s = 60500
+disciplina_string = str(disciplinas[disciplina_s])
+d1 = mldisc.process(disciplina_s, modulo_s, 1, use_coral, use_normalization, use_normalization_turma)
+sumarizar(4, disciplina_string, classificadores[1], d1, result)
+d2 = mldisc.process(disciplina_s, modulo_s, 2, use_coral, use_normalization, use_normalization_turma)
+sumarizar(4, disciplina_string, classificadores[2], d2, result)
+d3 = mldisc.process(disciplina_s, modulo_s, 3, use_coral, use_normalization, use_normalization_turma)
+sumarizar(4, disciplina_string, classificadores[3], d3, result)
+#-----------------------------------------
+
+result = result.reset_index()
 
 N = len(result)
 
@@ -82,7 +123,7 @@ width = 0.20       # the width of the bars
 fig = plt.figure()                                                               
 ax = fig.add_subplot(1,1,1)  
 
-plt.title(disciplina_string)
+plt.title('Disciplinas x Classificadores')
 
 plt.ylabel('Acurácia')
 
@@ -94,11 +135,66 @@ minor_ticks = np.arange(0, 101, 2.5)
 ax.set_yticks(major_ticks)
 ax.set_yticks(minor_ticks, minor=True)
 
-ax.set_xticks(ind + width / 2)
-ax.set_xticklabels(result['Disciplina'])
+ax.set_xticks(ind + width / 3)
+#ax.set_xticklabels(result['Disciplina'])
 
-b1 = ax.bar(ind, result['Naive Bayes'], width, color='#77b5e5', yerr=result['Naive BayesDP'])
-b2 = ax.bar(ind + width, result['Decision Tree'], width, color='#0747b2', yerr=result['Decision TreeDP'])
+b1 = ax.bar(ind, result['Naive Bayes'], width, color='#77b5e5')#, yerr=result['Naive BayesDP'])
+(x, caps, _) = ax.errorbar(ind, result['Naive Bayes'], yerr=result['Naive BayesDP'], elinewidth=1, capsize=8.0, fmt='none')
+#height = x.get_linewidth()
+height = 0
+for cap in caps:
+    cap.set_markeredgewidth(1)
+    height = cap.get_ydata(orig=True)[0]
+i = 0
+for rect in b1:
+    val = result.iloc[i]['Naive BayesDP']
+    #ax.text(ind+0.01,height, 't')
+    height = rect.get_height()
+    ax.text(rect.get_x() + rect.get_width() / 2,1.02*height,"%.2f%%" % val)
+    i = i + 1
+            
+
+b2 = ax.bar(ind + width, result['Decision Tree'], width, color='#0747b2')#, yerr=result['Decision TreeDP'])
+(x, caps, _) = ax.errorbar(ind + width, result['Decision Tree'], yerr=result['Decision TreeDP'], elinewidth=1.0, capsize=8.0, fmt='none')            
+height = 0
+for cap in caps:
+    cap.set_markeredgewidth(1)            
+    height = cap.get_ydata(orig=True)[0]
+i = 0
+for rect in b2:
+    val = result.iloc[i]['Decision TreeDP']
+    #ax.text(ind+0.01 + width,height, '%.2f%%' % result.iloc[i]['Decision TreeDP'])
+    height = rect.get_height()
+    ax.text(rect.get_x() + rect.get_width() / 2,1.02*height,"%.2f%%" % val)
+    i = i + 1
+
+
+b3 = ax.bar(ind + (width*2), result['SVM'], width, color='#cebe6f')#, yerr=result['Decision TreeDP'])
+(x, caps, _) = ax.errorbar(ind + (width*2), result['SVM'], yerr=result['SVMDP'], elinewidth=1.0, capsize=8.0, fmt='none')            
+height = 0
+for cap in caps:
+    cap.set_markeredgewidth(1)            
+    height = cap.get_ydata(orig=True)[0]
+i = 0
+for rect in b3:
+    val = result.iloc[i]['SVMDP']
+    #ax.text(ind+0.01 + (width*2),height, '%.2f%%' % result.get_value(i,'SVMDP'))
+    height = rect.get_height()
+    ax.text(rect.get_x() + rect.get_width() / 2,1.02*height,"%.2f%%" % val)
+    i = i + 1
+    
+
+
+
+
+            
+#b3 = ax.bar(ind + (width*2), result['SVM'], width, color='#cebe6f')#, yerr=result['Decision TreeDP'])
+#(_, caps, _) = ax.errorbar(ind + (width*2), result['SVM'], yerr=result['SVMDP'], elinewidth=1.0, capsize=8.0)            
+#for cap in caps:
+#    cap.set_markeredgewidth(2)            
+            
+
+
 #b3 = ax.bar(ind + (width*2), result['TesteSucesso'], width, color='#cebe6f')
 #b4 = ax.bar(ind + (width*3), result['TesteInsucesso'], width, color='#a37f00')
 
@@ -114,8 +210,8 @@ b2 = ax.bar(ind + width, result['Decision Tree'], width, color='#0747b2', yerr=r
 
 ax.set_ylim(ymin=40, ymax=100)
 
-ax.legend((b1[0], b2[0]),
-          ('Naive Bayes', 'Decision Tree'),bbox_to_anchor=(0., 0., 1., -0.09),ncol=2, borderaxespad=0.)
+ax.legend((b1[0], b2[0], b3[0]),
+          ('Naive Bayes', 'Decision Tree', 'SVM'),bbox_to_anchor=(0., 0., 1., -0.15),ncol=3, borderaxespad=0.)
 
 #plt.legend(, loc=3,
 #           )
@@ -133,5 +229,21 @@ plt.xticks(ind + width / 2)
 ax.yaxis.grid(which="major", color='#000000', linestyle=':', linewidth=0.5)
 
 ax.yaxis.grid(True)
+
+#plot table
+table_rows = ['Naive Bayes','Decision Tree','SVM']
+table_cols = []
+cell_text=[]
+
+for idx, row in result.iterrows():
+    cell_text.append([float("{0:.2f}".format(row['Naive Bayes']))])
+    cell_text.append([float("{0:.2f}".format(row['Decision Tree']))])
+    cell_text.append([float("{0:.2f}".format(row['SVM']))])
+    table_cols.append([row['Disciplina']])
+
+table = plt.table(cellText=cell_text,
+                  rowLabels=table_rows,
+                  colLabels=table_cols,
+                  loc='bottom')
 
 plt.show()

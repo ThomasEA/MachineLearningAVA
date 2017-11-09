@@ -37,9 +37,9 @@ def sumarizar(i, disciplina, classificador, df, result):
 plt.style.use('seaborn-colorblind')
 plt.rcParams['figure.figsize'] = (11,7)
 
-use_normalization = True
-use_normalization_turma = False
-use_coral = False
+use_normalization = False
+use_normalization_turma = True
+use_coral = True
 
 #-------------------------------------------------------
 # Configuração de filtros para o dataset

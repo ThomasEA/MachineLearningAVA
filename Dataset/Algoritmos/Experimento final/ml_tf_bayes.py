@@ -35,9 +35,17 @@ def sumarizar(i, disciplina, classificador, df, result, coral=False):
     if (coral==True):
         result.set_value(i,classificador + 'Coral', df['Acur'].mean())
         result.set_value(i,classificador + 'CoralDP', df['Acur'].std(ddof=1))
+        result.set_value(i,classificador + 'PrecisionSucessoCoral', df['Precision Sucesso'].mean())
+        result.set_value(i,classificador + 'PrecisionInsucessoCoral', df['Precision Insucesso'].mean())
+        result.set_value(i,classificador + 'RecallSucessoCoral', df['Recall Sucesso'].mean())
+        result.set_value(i,classificador + 'RecallInsucessoCoral', df['Recall Insucesso'].mean())
     else:
         result.set_value(i,classificador, df['Acur'].mean())
         result.set_value(i,classificador + 'DP', df['Acur'].std(ddof=1))
+        result.set_value(i,classificador + 'PrecisionSucesso', df['Precision Sucesso'].mean())
+        result.set_value(i,classificador + 'PrecisionInsucesso', df['Precision Insucesso'].mean())
+        result.set_value(i,classificador + 'RecallSucesso', df['Recall Sucesso'].mean())
+        result.set_value(i,classificador + 'RecallInsucesso', df['Recall Insucesso'].mean())
 
 #Carrega dataset
 df = pd.read_csv('../../dataset_m3_m6.csv', sep=';')
@@ -52,7 +60,7 @@ use_coral = True
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
 modulo_s = 6 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
-classificador = 3
+classificador = 1
 
 features = {
         50404: ['Questionario_Quantidade_Somado', 'Forum_TempoUso_Somado', 'Log_Post_Quantidade_Somado', 'Questionario_TempoUso_Somado', 'Login_Quantidade','Turno_TempoUsoTotal_Somado', 'Evadido','CodigoTurma'],
@@ -76,7 +84,7 @@ classificadores = {
         }
 
 result = pd.DataFrame()
-
+"""
 #-----------------------------------------
 disciplina_s = 60500
 disciplina_string = str(disciplinas[disciplina_s])
@@ -104,7 +112,7 @@ sumarizar(3, disciplina_string, classificadores[classificador], d1, result)
 d2 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=True, use_normalization=True, use_normalization_turma=False)
 sumarizar(3, disciplina_string, classificadores[classificador], d2, result, coral=True)
 #-----------------------------------------
-
+"""
 #-----------------------------------------
 disciplina_s = 50404
 disciplina_string = str(disciplinas[disciplina_s])
@@ -169,19 +177,151 @@ ax.set_ylim(ymin=ymin, ymax=100)
 ax.legend((b1[0], b2[0]),
           ('z-Score', 'CORAL'),bbox_to_anchor=(0.5,-0.10), loc='upper center', ncol=2)
 
-#plt.legend(, loc=3,
-#           )
+ax.yaxis.grid(which="major", color='#000000', linestyle=':', linewidth=0.5)
 
-#ax.legend((l3[0], l4[0], l1[0], l2[0]),
-#          ('Treino Desbal. %', 'Teste Desbal. %', 'Acur. Original %', 'Acur. CORAL %'), 
-#          loc=4, bbox_to_anchor=(1.05, 1))
+ax.yaxis.grid(True)
 
-#plt.xticks((ind + (width * 2)) / 2)
+plt.show()
 
-#ax.grid(which='both')                                                            
+#--------------------------------
+#Plot Recall e Precision
 
-# or if you want differnet settings for the grids:                               
-#ax.grid(which='minor', alpha=0.4)                                                
+ymin = 0
+
+fig = plt.figure()                                                               
+ax = fig.add_subplot(1,1,1)  
+
+classif_str = classificadores[classificador]
+
+plt.title('Precision - Semana {} - {}'.format(modulo_s, classif_str))
+
+plt.ylabel('Precision')
+
+plt.xlabel('Disciplinas')
+
+major_ticks = np.arange(0, 101, 10)                                              
+minor_ticks = np.arange(0, 101, 2.5)
+
+ax.set_yticks(major_ticks)
+ax.set_yticks(minor_ticks, minor=True)
+
+ax.set_xticks(ind + (width * 3) / 2)
+ax.set_xticklabels(result['Disciplina'])
+
+b1 = ax.bar(ind, result[classif_str+'PrecisionInsucesso'], width, color='#0077d4')
+height = 0
+i = 0
+for rect in b1:
+    val = result.iloc[i][classif_str+'PrecisionInsucesso']
+    height = rect.get_height()
+    ax.text(rect.get_x(),(height + ymin)/2,"%.2f%%" % val, color='w')
+    i = i + 1
+            
+b2 = ax.bar(ind + width, result[classif_str+'PrecisionSucesso'], width, color='#c6e2ff')
+height = 0
+i = 0
+for rect in b2:
+    val = result.iloc[i][classif_str+'PrecisionSucesso']
+    height = rect.get_height()
+    ax.text(rect.get_x(),(height + ymin)/2,"%.2f%%" % val)
+    i = i + 1
+
+b3 = ax.bar(ind + (width*2), result[classif_str+'PrecisionInsucessoCoral'], width, color='#b22222')
+height = 0
+i = 0
+for rect in b3:
+    val = result.iloc[i][classif_str+'PrecisionInsucessoCoral']
+    height = rect.get_height()
+    ax.text(rect.get_x(),(height + ymin)/2,"%.2f%%" % val, color='w')
+    i = i + 1
+            
+b4 = ax.bar(ind + (width*3), result[classif_str+'PrecisionSucessoCoral'], width, color='#fa8072')
+height = 0
+i = 0
+for rect in b4:
+    val = result.iloc[i][classif_str+'PrecisionSucessoCoral']
+    height = rect.get_height()
+    ax.text(rect.get_x(),(height + ymin)/2,"%.2f%%" % val)
+    i = i + 1
+
+
+ax.set_ylim(ymin=ymin, ymax=100)
+
+ax.legend((b1[0], b2[0], b3[0], b4[0]),
+          ('Insucesso', 'Sucesso', 'Insucesso - CORAL', 'Sucesso - CORAL'),bbox_to_anchor=(0.5,-0.10), loc='upper center', ncol=4)
+
+ax.yaxis.grid(which="major", color='#000000', linestyle=':', linewidth=0.5)
+
+ax.yaxis.grid(True)
+
+plt.show()
+
+#-------------- PLOT RECALL -----------------#
+
+ymin = 0
+
+fig = plt.figure()                                                               
+ax = fig.add_subplot(1,1,1)  
+
+classif_str = classificadores[classificador]
+
+plt.title('Recall - Semana {} - {}'.format(modulo_s, classif_str))
+
+plt.ylabel('Recall')
+
+plt.xlabel('Disciplinas')
+
+major_ticks = np.arange(0, 101, 10)                                              
+minor_ticks = np.arange(0, 101, 2.5)
+
+ax.set_yticks(major_ticks)
+ax.set_yticks(minor_ticks, minor=True)
+
+ax.set_xticks(ind + (width * 3) / 2)
+ax.set_xticklabels(result['Disciplina'])
+
+b1 = ax.bar(ind, result[classif_str+'RecallInsucesso'], width, color='#0077d4')
+height = 0
+i = 0
+for rect in b1:
+    val = result.iloc[i][classif_str+'RecallInsucesso']
+    height = rect.get_height()
+    ax.text(rect.get_x(),(height + ymin)/2,"%.2f%%" % val, color='w')
+    i = i + 1
+            
+b2 = ax.bar(ind + width, result[classif_str+'RecallSucesso'], width, color='#c6e2ff')
+height = 0
+i = 0
+for rect in b2:
+    val = result.iloc[i][classif_str+'RecallSucesso']
+    height = rect.get_height()
+    ax.text(rect.get_x(),(height + ymin)/2,"%.2f%%" % val)
+    i = i + 1
+
+b3 = ax.bar(ind + (width*2), result[classif_str+'RecallInsucessoCoral'], width, color='#b22222')
+height = 0
+i = 0
+for rect in b3:
+    val = result.iloc[i][classif_str+'RecallInsucessoCoral']
+    height = rect.get_height()
+    ax.text(rect.get_x(),(height + ymin)/2,"%.2f%%" % val, color='w')
+    i = i + 1
+            
+b4 = ax.bar(ind + (width*3), result[classif_str+'RecallSucessoCoral'], width, color='#fa8072')
+height = 0
+i = 0
+for rect in b4:
+    val = result.iloc[i][classif_str+'RecallSucessoCoral']
+    height = rect.get_height()
+    ax.text(rect.get_x(),(height + ymin)/2,"%.2f%%" % val)
+    i = i + 1
+
+
+ax.set_ylim(ymin=ymin, ymax=100)
+
+ax.legend((b1[0], b2[0], b3[0], b4[0]),
+          ('Insucesso', 'Sucesso', 'Insucesso - CORAL', 'Sucesso - CORAL'),bbox_to_anchor=(0.5,-0.10), loc='upper center', ncol=4)
+
 ax.yaxis.grid(which="major", color='#000000', linestyle=':', linewidth=0.5)
 
 ax.yaxis.grid(True)

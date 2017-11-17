@@ -16,6 +16,8 @@ import filter as filter
 import util as util
 import coral as coral
 
+import seaborn as sns
+
 from sklearn.utils import shuffle
 from sklearn import preprocessing
 from sklearn.model_selection import StratifiedKFold
@@ -71,6 +73,8 @@ def process(df, disciplina_s, modulo_s, classificador, use_coral, use_normalizat
     
     df_s_folds = util.sep_folds(df_s,'CodigoTurma')
     
+    sns.distplot(df_s.Evadido)
+    
     result = pd.DataFrame()
 
     model = None
@@ -87,7 +91,11 @@ def process(df, disciplina_s, modulo_s, classificador, use_coral, use_normalizat
         model = GridSearchCV(clf, parameters)    
 
     i = 1
-
+    
+    
+    
+    cm = np.matrix('0.0 0.0; 0.0 0.0')
+    
     print('---- Folds -----')
     
     for name, fold in df_s_folds:
@@ -153,6 +161,20 @@ def process(df, disciplina_s, modulo_s, classificador, use_coral, use_normalizat
     
         accuracy = accuracy_score(target_t, predicted)                                
         
+        cm_tmp = confusion_matrix(target_t, predicted)
+        
+        cm += confusion_matrix(target_t, predicted)
+        
+        TN = 0.0
+        FN = 0.0
+        TP = 0.0
+        FP = 0.0
+        
+        TN = cm_tmp[0][0]
+        FN = cm_tmp[1][0]
+        FP = cm_tmp[0][1]
+        TP = cm_tmp[1][1]
+        
         print('\t         Acurárica......: [%.2f]' % accuracy)
         
         result.set_value(i,'Classificador',classificadores[classificador])
@@ -160,6 +182,10 @@ def process(df, disciplina_s, modulo_s, classificador, use_coral, use_normalizat
         result.set_value(i,'Turma','T' + str(i))
         result.set_value(i,'Coral', use_coral)
         result.set_value(i,'Acur',accuracy * 100)
+        result.set_value(i,'Precision Insucesso', (TN / (TN + FN)) * 100 )
+        result.set_value(i,'Recall Insucesso', (TN / (TN+FP)) * 100 )
+        result.set_value(i,'Precision Sucesso', (TP / (TP + FP)) * 100 )
+        result.set_value(i,'Recall Sucesso', (TP / (TP+FN)) * 100 )
         result.set_value(i,'TreinoSucesso',len(target_s[target_s == 0]) / len(target_s) * 100)
         result.set_value(i,'TreinoInsucesso',len(target_s[target_s == 1]) / len(target_s) * 100)
         result.set_value(i,'TreinoDesbalanceamento',(len(target_s[target_s == 1]) / len(target_s) * 100) / (len(target_s[target_s == 0]) / len(target_s) * 100) * 5)
@@ -168,6 +194,8 @@ def process(df, disciplina_s, modulo_s, classificador, use_coral, use_normalizat
         result.set_value(i,'TesteDesbalanceamento',(len(target_t[target_t == 1]) / len(target_t) * 100) / (len(target_t[target_t == 0]) / len(target_t) * 100) * 5)
         
         i += 1
-
+    
+    #util.show_confusion_matrix(cm, class_labels=['Insucesso', 'Sucesso'])
+    
     return result;
   

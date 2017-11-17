@@ -171,13 +171,13 @@ def show_confusion_matrix(C,class_labels=['0','1']):
 
     # Fill in secondary metrics: accuracy, true pos rate, etc...
     ax.text(2,0,
-            'Precision: %.2f'%(fp / (fp+tn+0.)),
+            'Recall: %.2f'%(tn / (tn+fp+0.)),
             va='center',
             ha='center',
             bbox=dict(fc='w',boxstyle='round'))
 
     ax.text(2,1,
-            'Precision: %.2f'%(tp / (tp+fn+0.)),
+            'Recall: %.2f'%(tp / (tp+fn+0.)),
             va='center',
             ha='center',
             bbox=dict(fc='w',boxstyle='round'))
@@ -189,13 +189,13 @@ def show_confusion_matrix(C,class_labels=['0','1']):
             bbox=dict(fc='w',boxstyle='round'))
 
     ax.text(0,2,
-            'Recall: %.2f'%(1-fn/(fn+tn+0.)),
+            'Precision: %.2f'%(1-fn/(fn+tn+0.)),
             va='center',
             ha='center',
             bbox=dict(fc='w',boxstyle='round'))
 
     ax.text(1,2,
-            'Recall: %.2f'%(tp/(tp+fp+0.)),
+            'Precision: %.2f'%(tp/(tp+fp+0.)),
             va='center',
             ha='center',
             bbox=dict(fc='w',boxstyle='round'))

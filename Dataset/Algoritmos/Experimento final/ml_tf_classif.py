@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Nov  2 07:54:01 2017
+Created on Fri Nov  17 09:56:35 2017
 
 @author: Everton
 
-Modelo preditivo baseado em turma-fold
-    - Cross validation
-    - Balanceamento de classes
+Experimento final para discussao no artigo
+
+Cenario:
+        Normalizaçao pela vari
+
 """
 import pandas as pd
 import numpy as np
@@ -38,7 +40,7 @@ plt.style.use('seaborn-colorblind')
 plt.rcParams['figure.figsize'] = (11,7)
 
 use_normalization = False
-use_normalization_turma = False
+use_normalization_turma = True
 use_coral = True
 
 #-------------------------------------------------------
@@ -79,7 +81,7 @@ sumarizar(1, disciplina_string, classificadores[2], d2, result)
 d3 = mldisc.process(disciplina_s, modulo_s, 3, use_coral, use_normalization, use_normalization_turma)
 sumarizar(1, disciplina_string, classificadores[3], d3, result)
 #-----------------------------------------
-"""
+
 #-----------------------------------------
 disciplina_s = 60463
 disciplina_string = str(disciplinas[disciplina_s])
@@ -112,7 +114,7 @@ sumarizar(4, disciplina_string, classificadores[2], d2, result)
 d3 = mldisc.process(disciplina_s, modulo_s, 3, use_coral, use_normalization, use_normalization_turma)
 sumarizar(4, disciplina_string, classificadores[3], d3, result)
 #-----------------------------------------
-"""
+
 result = result.reset_index()
 
 N = len(result)

@@ -71,6 +71,8 @@ def process(df, disciplina_s, modulo_s, classificador, use_coral, use_normalizat
                                 features[disciplina_s],
                                 feature_normalization=use_normalization)
     
+    df_s.to_csv('../../m{}_{}_turmas.csv'.format(modulo_s, disciplina_string))
+    
     df_s_folds = util.sep_folds(df_s,'CodigoTurma')
     
     sns.distplot(df_s.Evadido)
@@ -182,10 +184,10 @@ def process(df, disciplina_s, modulo_s, classificador, use_coral, use_normalizat
         result.set_value(i,'Turma','T' + str(i))
         result.set_value(i,'Coral', use_coral)
         result.set_value(i,'Acur',accuracy * 100)
-        result.set_value(i,'Precision Insucesso', (TN / (TN + FN)) * 100 )
-        result.set_value(i,'Recall Insucesso', (TN / (TN+FP)) * 100 )
-        result.set_value(i,'Precision Sucesso', (TP / (TP + FP)) * 100 )
-        result.set_value(i,'Recall Sucesso', (TP / (TP+FN)) * 100 )
+        result.set_value(i,'Precision Sucesso', (TN / (TN + FN)) * 100 )
+        result.set_value(i,'Recall Sucesso', (TN / (TN+FP)) * 100 )
+        result.set_value(i,'Precision Insucesso', (TP / (TP + FP)) * 100 )
+        result.set_value(i,'Recall Insucesso', (TP / (TP+FN)) * 100 )
         result.set_value(i,'TreinoSucesso',len(target_s[target_s == 0]) / len(target_s) * 100)
         result.set_value(i,'TreinoInsucesso',len(target_s[target_s == 1]) / len(target_s) * 100)
         result.set_value(i,'TreinoDesbalanceamento',(len(target_s[target_s == 1]) / len(target_s) * 100) / (len(target_s[target_s == 0]) / len(target_s) * 100) * 5)

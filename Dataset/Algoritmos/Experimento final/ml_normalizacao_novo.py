@@ -7,12 +7,12 @@ Created on Fri Nov  17 09:56:35 2017
 Experimento final para discussao no artigo
 
 Cenario:
-        Normalizaçao pela vari
+        Novo modelo de normalização
 
 """
 import pandas as pd
 import numpy as np
-import preditor
+import preditor_normalizacao_novo as preditor
 
 import matplotlib.pyplot as plt
 
@@ -53,10 +53,6 @@ df = pd.read_csv('../../dataset_m3_m6.csv', sep=';')
 plt.style.use('seaborn-colorblind')
 plt.rcParams['figure.figsize'] = (11,7)
 
-use_normalization = False
-use_normalization_turma = True
-use_coral = True
-
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
 modulo_s = 6 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
@@ -88,9 +84,9 @@ result = pd.DataFrame()
 #-----------------------------------------
 disciplina_s = 60500
 disciplina_string = str(disciplinas[disciplina_s])
-d1 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=False, use_normalization=True, use_normalization_turma=False)
+d1 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=False)
 sumarizar(1, disciplina_string, classificadores[classificador], d1, result)
-d2 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=True, use_normalization=True, use_normalization_turma=False)
+d2 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=True)
 sumarizar(1, disciplina_string, classificadores[classificador], d2, result, coral=True)
 
 #-----------------------------------------
@@ -98,27 +94,27 @@ sumarizar(1, disciplina_string, classificadores[classificador], d2, result, cora
 #-----------------------------------------
 disciplina_s = 60463
 disciplina_string = str(disciplinas[disciplina_s])
-d1 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=False, use_normalization=True, use_normalization_turma=False)
+d1 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=False)
 sumarizar(2, disciplina_string, classificadores[classificador], d1, result)
-d2 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=True, use_normalization=True, use_normalization_turma=False)
+d2 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=True)
 sumarizar(2, disciplina_string, classificadores[classificador], d2, result, coral=True)
 #-----------------------------------------
 
 #-----------------------------------------
 disciplina_s = 60465
 disciplina_string = str(disciplinas[disciplina_s])
-d1 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=False, use_normalization=True, use_normalization_turma=False)
+d1 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=False)
 sumarizar(3, disciplina_string, classificadores[classificador], d1, result)
-d2 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=True, use_normalization=True, use_normalization_turma=False)
+d2 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=True)
 sumarizar(3, disciplina_string, classificadores[classificador], d2, result, coral=True)
 #-----------------------------------------
 
 #-----------------------------------------
 disciplina_s = 50404
 disciplina_string = str(disciplinas[disciplina_s])
-d1 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=False, use_normalization=True, use_normalization_turma=False)
+d1 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=False)
 sumarizar(4, disciplina_string, classificadores[classificador], d1, result)
-d2 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=True, use_normalization=True, use_normalization_turma=False)
+d2 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=True)
 sumarizar(4, disciplina_string, classificadores[classificador], d2, result, coral=True)
 #-----------------------------------------
 
@@ -161,7 +157,7 @@ for rect in b1:
     ax.text(rect.get_x(),(height + ymin)/2,"%.2f%%" % val, color='w')
     i = i + 1
             
-b2 = ax.bar(ind + width, result[classif_str + 'Coral'], width, color='r', yerr=result[classif_str + 'CoralDP'])
+b2 = ax.bar(ind + width, result[classif_str + 'Coral'], width, color='#b22222', yerr=result[classif_str + 'CoralDP'])
 height = 0
 i = 0
 for rect in b2:
@@ -169,7 +165,7 @@ for rect in b2:
     valDP = result.iloc[i][classif_str + 'CoralDP']
     height = rect.get_height()
     ax.text(0.01 + rect.get_x() + rect.get_width() / 2,1.02*height,"%.2f%%" % valDP)
-    ax.text(rect.get_x(),(height + ymin)/2,"%.2f%%" % val)
+    ax.text(rect.get_x(),(height + ymin)/2,"%.2f%%" % val, color='w')
     i = i + 1
 
 ax.set_ylim(ymin=ymin, ymax=100)

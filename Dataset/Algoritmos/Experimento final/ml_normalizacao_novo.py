@@ -35,6 +35,8 @@ def sumarizar(i, disciplina, classificador, df, result, coral=False):
     if (coral==True):
         result.set_value(i,classificador + 'Coral', df['Acur'].mean())
         result.set_value(i,classificador + 'CoralDP', df['Acur'].std(ddof=1))
+        result.set_value(i,'GMeanCoral', df['GMean'].mean())
+        result.set_value(i,'GMeanCoralDP', df['GMean'].std(ddof=1))
         result.set_value(i,classificador + 'PrecisionSucessoCoral', df['Precision Sucesso'].mean())
         result.set_value(i,classificador + 'PrecisionInsucessoCoral', df['Precision Insucesso'].mean())
         result.set_value(i,classificador + 'RecallSucessoCoral', df['Recall Sucesso'].mean())
@@ -42,10 +44,26 @@ def sumarizar(i, disciplina, classificador, df, result, coral=False):
     else:
         result.set_value(i,classificador, df['Acur'].mean())
         result.set_value(i,classificador + 'DP', df['Acur'].std(ddof=1))
+        result.set_value(i,'GMean', df['GMean'].mean())
+        result.set_value(i,'GMeanDP', df['GMean'].std(ddof=1))
         result.set_value(i,classificador + 'PrecisionSucesso', df['Precision Sucesso'].mean())
         result.set_value(i,classificador + 'PrecisionInsucesso', df['Precision Insucesso'].mean())
         result.set_value(i,classificador + 'RecallSucesso', df['Recall Sucesso'].mean())
         result.set_value(i,classificador + 'RecallInsucesso', df['Recall Insucesso'].mean())
+
+def autolabel(rects, ax):
+    tamFonte = 14
+    
+    (y_bottom, y_top) = ax.get_ylim()
+    y_height = y_top - y_bottom
+    
+    for rect in rects:
+        height = rect.get_height()
+        label_position = height + (y_height * 0.01)
+        
+        ax.text(rect.get_x() + rect.get_width()/2., label_position,
+                '%.2f%%' % height,
+                ha='center', va='bottom', size = tamFonte)
 
 #Carrega dataset
 df = pd.read_csv('../../dataset_m3_m6.csv', sep=';')
@@ -67,9 +85,9 @@ features = {
             
 #-------------------------------------------------------
 disciplinas = {
-        50404: 'Fund. Proc. Administrativo', 
-        60463: 'Ofic. Raciocínio Lógico',
-        60465: 'Matemática Administração',
+        50404: 'Fund. Proc. \nAdministrativo', 
+        60463: 'Ofic. Raciocínio\nLógico',
+        60465: 'Matemática\nAdministração',
         60500: 'Lógica'
     }
 
@@ -171,14 +189,120 @@ for rect in b2:
 ax.set_ylim(ymin=ymin, ymax=100)
 
 ax.legend((b1[0], b2[0]),
-          ('z-Score', 'CORAL'),bbox_to_anchor=(0.5,-0.10), loc='upper center', ncol=2)
+          ('Z-SCORE', 'CORAL'),bbox_to_anchor=(0.5,-0.10), loc='upper center', ncol=2)
 
 ax.yaxis.grid(which="major", color='#000000', linestyle=':', linewidth=0.5)
 
 ax.yaxis.grid(True)
 
 plt.show()
+plt.savefig('accur_m{}_{}'.format(modulo_s, classif_str))
 
+
+
+#-----------------------#
+#
+#-----------------------#
+width=0.35
+opacity = 0.8
+tamFonte = 14
+
+fig, ax = plt.subplots()                                                               
+
+rects1 = plt.bar(ind, 
+                 result['GMean'], 
+                 width, 
+                 alpha=opacity,
+                 color='b',
+                 label='Z-SCORE')
+
+rects2 = plt.bar(ind + width, 
+                 result['GMeanCoral'], 
+                 width, 
+                 alpha=opacity,
+                 color='r',
+                 label='CORAL')
+
+autolabel(rects1, ax)
+autolabel(rects2, ax)
+
+classif_str = classificadores[classificador]
+
+plt.title('Semana {} - {}'.format(modulo_s, classif_str))
+
+plt.ylabel('G-Mean', fontsize = tamFonte - 2, fontweight='bold')
+
+plt.xticks(ind + width / 2,result['Disciplina'], fontsize = tamFonte - 2, fontweight='bold')
+#plt.xticklabels(result['Disciplina'])
+
+plt.legend(prop={'size': tamFonte, 'weight': 'bold'})
+plt.tight_layout()
+
+axes = plt.gca()
+axes.set_ylim([0,1])
+plt.tick_params(axis='y', labelsize = tamFonte)
+plt.show()
+plt.savefig('gmean_m{}_{}'.format(modulo_s, classif_str))
+
+"""
+ymin = 0
+
+fig = plt.figure()                                                               
+ax = fig.add_subplot(1,1,1)  
+
+classif_str = classificadores[classificador]
+
+plt.title('Semana {} - {}'.format(modulo_s, classif_str))
+
+plt.ylabel('G-Mean')
+
+plt.xlabel('Disciplinas')
+
+major_ticks = np.arange(0, 101, 0.1)                                              
+minor_ticks = np.arange(0, 101, 0.025)
+
+ax.set_yticks(major_ticks)
+ax.set_yticks(minor_ticks, minor=True)
+
+ax.set_xticks(ind + width / 2)
+ax.set_xticklabels(result['Disciplina'])
+
+b1 = ax.bar(ind, result['GMean'], width, color='b', yerr=result['GMeanDP'])
+height = 0
+i = 0
+for rect in b1:
+    val = result.iloc[i]['GMean']
+    valDP = result.iloc[i]['GMeanDP']
+    height = rect.get_height()
+    ax.text(0.01 + rect.get_x() + rect.get_width() / 2,1.02*height,"%.2f%%" % valDP)
+    ax.text(rect.get_x(),(height + ymin)/2,"%.2f%%" % val, color='w')
+    i = i + 1
+            
+b2 = ax.bar(ind + width, result['GMeanCoral'], width, color='#b22222', yerr=result['GMeanCoralDP'])
+height = 0
+i = 0
+for rect in b2:
+    val = result.iloc[i]['GMeanCoral']
+    valDP = result.iloc[i]['GMeanCoralDP']
+    height = rect.get_height()
+    ax.text(0.01 + rect.get_x() + rect.get_width() / 2,1.02*height,"%.2f%%" % valDP)
+    ax.text(rect.get_x(),(height + ymin)/2,"%.2f%%" % val, color='w')
+    i = i + 1
+
+             
+             
+ax.set_ylim(ymin=ymin, ymax=1)
+
+ax.legend((b1[0], b2[0]),
+          ('Z-SCORE', 'CORAL'),bbox_to_anchor=(0.5,-0.10), loc='upper center', ncol=4)
+
+ax.yaxis.grid(which="major", color='#000000', linestyle=':', linewidth=0.5)
+
+ax.yaxis.grid(True)
+
+plt.show()
+"""
+"""
 #--------------------------------
 #Plot Recall e Precision
 
@@ -323,3 +447,4 @@ ax.yaxis.grid(which="major", color='#000000', linestyle=':', linewidth=0.5)
 ax.yaxis.grid(True)
 
 plt.show()
+"""

@@ -32,6 +32,7 @@ from sklearn import svm
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
+from math import sqrt
 
 def process(df, disciplina_s, modulo_s, classificador, use_coral):
     #-------------------------------------------------------
@@ -175,6 +176,10 @@ def process(df, disciplina_s, modulo_s, classificador, use_coral):
         FP = cm_tmp[0][1]
         TP = cm_tmp[1][1]
         
+        TPR = (TP / (TP+FN))
+        TNR = (TN / (TN+FP))
+        gmean = sqrt(TPR*TNR)
+        
         print('\t         Acurárica......: [%.2f]' % accuracy)
         
         result.set_value(i,'Classificador',classificadores[classificador])
@@ -192,6 +197,7 @@ def process(df, disciplina_s, modulo_s, classificador, use_coral):
         result.set_value(i,'TesteSucesso',len(target_t[target_t == 0]) / len(target_t) * 100)
         result.set_value(i,'TesteInsucesso',len(target_t[target_t == 1]) / len(target_t) * 100)
         result.set_value(i,'TesteDesbalanceamento',(len(target_t[target_t == 1]) / len(target_t) * 100) / (len(target_t[target_t == 0]) / len(target_t) * 100) * 5)
+        result.set_value(i,'GMean', gmean)
         
         i += 1
     

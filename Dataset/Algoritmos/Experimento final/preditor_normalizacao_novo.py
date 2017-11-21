@@ -166,21 +166,30 @@ def process(df, disciplina_s, modulo_s, classificador, use_coral):
         
         cm += confusion_matrix(target_t, predicted)
         
-        TN = 0.0
-        FN = 0.0
-        TP = 0.0
-        FP = 0.0
+        TN = (0.0)
+        FN = (0.0)
+        TP = (0.0)
+        FP = (0.0)
+        
+        TPR = 0.0
+        TNR = 0.0
+        gmean = 0.0
         
         TN = cm_tmp[0][0]
         FN = cm_tmp[1][0]
         FP = cm_tmp[0][1]
         TP = cm_tmp[1][1]
         
-        TPR = (TP / (TP+FN))
-        TNR = (TN / (TN+FP))
-        gmean = sqrt(TPR*TNR)
+        RecallSucesso = (TN / (TN+FP))
+        RecallInsucesso = (TP / (TP+FN))
         
-        print('\t         Acurárica......: [%.2f]' % accuracy)
+        gmean_tmp = (RecallSucesso * RecallInsucesso)
+        gmean = (sqrt(gmean_tmp))
+        
+        print('\t         Acurárica........: [%.2f]' % accuracy)
+        print('\t         Recall Sucesso...: [%.2f]' % RecallSucesso)
+        print('\t         Recall Insucesso.: [%.2f]' % RecallInsucesso)
+        print('\t         GMean............: [%.2f]' % gmean)
         
         result.set_value(i,'Classificador',classificadores[classificador])
         result.set_value(i,'Disciplina',disciplina_string)
@@ -188,9 +197,9 @@ def process(df, disciplina_s, modulo_s, classificador, use_coral):
         result.set_value(i,'Coral', use_coral)
         result.set_value(i,'Acur',accuracy * 100)
         result.set_value(i,'Precision Sucesso', (TN / (TN + FN)) * 100 )
-        result.set_value(i,'Recall Sucesso', (TN / (TN+FP)) * 100 )
+        result.set_value(i,'Recall Sucesso', RecallSucesso * 100 )
         result.set_value(i,'Precision Insucesso', (TP / (TP + FP)) * 100 )
-        result.set_value(i,'Recall Insucesso', (TP / (TP+FN)) * 100 )
+        result.set_value(i,'Recall Insucesso', RecallInsucesso * 100 )
         result.set_value(i,'TreinoSucesso',len(target_s[target_s == 0]) / len(target_s) * 100)
         result.set_value(i,'TreinoInsucesso',len(target_s[target_s == 1]) / len(target_s) * 100)
         result.set_value(i,'TreinoDesbalanceamento',(len(target_s[target_s == 1]) / len(target_s) * 100) / (len(target_s[target_s == 0]) / len(target_s) * 100) * 5)
@@ -198,6 +207,8 @@ def process(df, disciplina_s, modulo_s, classificador, use_coral):
         result.set_value(i,'TesteInsucesso',len(target_t[target_t == 1]) / len(target_t) * 100)
         result.set_value(i,'TesteDesbalanceamento',(len(target_t[target_t == 1]) / len(target_t) * 100) / (len(target_t[target_t == 0]) / len(target_t) * 100) * 5)
         result.set_value(i,'GMean', gmean)
+        result.set_value(i,'TPR', RecallInsucesso)
+        result.set_value(i,'TNR', RecallSucesso)
         
         i += 1
     

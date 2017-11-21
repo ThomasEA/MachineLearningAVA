@@ -13,6 +13,7 @@ Cenario:
 import pandas as pd
 import numpy as np
 import preditor_normalizacao_novo as preditor
+from math import sqrt
 
 import matplotlib.pyplot as plt
 
@@ -32,11 +33,17 @@ def sumarizar(i, disciplina, classificador, df, result, coral=False):
     result.set_value(i,'TesteDesbalanceamento',(len(target_t[target_t == 1]) / len(target_t) * 100) / (len(target_t[target_t == 0]) / len(target_t) * 100) * 5)    
     """
     result.set_value(i,'Disciplina', disciplina)
+    
+    TNR = df['TNR'].mean()
+    TPR = df['TPR'].mean()
+    
+    gmean = sqrt(TNR*TPR) * 100
+    
     if (coral==True):
         result.set_value(i,classificador + 'Coral', df['Acur'].mean())
         result.set_value(i,classificador + 'CoralDP', df['Acur'].std(ddof=1))
-        result.set_value(i,'GMeanCoral', df['GMean'].mean())
-        result.set_value(i,'GMeanCoralDP', df['GMean'].std(ddof=1))
+        result.set_value(i,'GMeanCoral', gmean)
+        #result.set_value(i,'GMeanCoralDP', df['GMean'].std(ddof=1))
         result.set_value(i,classificador + 'PrecisionSucessoCoral', df['Precision Sucesso'].mean())
         result.set_value(i,classificador + 'PrecisionInsucessoCoral', df['Precision Insucesso'].mean())
         result.set_value(i,classificador + 'RecallSucessoCoral', df['Recall Sucesso'].mean())
@@ -44,8 +51,8 @@ def sumarizar(i, disciplina, classificador, df, result, coral=False):
     else:
         result.set_value(i,classificador, df['Acur'].mean())
         result.set_value(i,classificador + 'DP', df['Acur'].std(ddof=1))
-        result.set_value(i,'GMean', df['GMean'].mean())
-        result.set_value(i,'GMeanDP', df['GMean'].std(ddof=1))
+        result.set_value(i,'GMean', gmean)
+        #result.set_value(i,'GMeanDP', df['GMean'].std(ddof=1))
         result.set_value(i,classificador + 'PrecisionSucesso', df['Precision Sucesso'].mean())
         result.set_value(i,classificador + 'PrecisionInsucesso', df['Precision Insucesso'].mean())
         result.set_value(i,classificador + 'RecallSucesso', df['Recall Sucesso'].mean())
@@ -73,8 +80,8 @@ plt.rcParams['figure.figsize'] = (11,7)
 
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
-modulo_s = 6 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
-classificador = 3
+modulo_s = 3 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
+classificador = 1
 
 features = {
         50404: ['Questionario_Quantidade_Somado', 'Forum_TempoUso_Somado', 'Log_Post_Quantidade_Somado', 'Questionario_TempoUso_Somado', 'Login_Quantidade','Turno_TempoUsoTotal_Somado', 'Evadido','CodigoTurma'],
@@ -207,7 +214,8 @@ width=0.35
 opacity = 0.8
 tamFonte = 14
 
-fig, ax = plt.subplots()                                                               
+fig = plt.figure()                                                               
+ax = fig.add_subplot(1,1,1)                                                              
 
 rects1 = plt.bar(ind, 
                  result['GMean'], 
@@ -239,7 +247,7 @@ plt.legend(prop={'size': tamFonte, 'weight': 'bold'})
 plt.tight_layout()
 
 axes = plt.gca()
-axes.set_ylim([0,1])
+axes.set_ylim([40,100])
 plt.tick_params(axis='y', labelsize = tamFonte)
 plt.show()
 plt.savefig('gmean_m{}_{}'.format(modulo_s, classif_str))
@@ -375,11 +383,11 @@ ax.yaxis.grid(which="major", color='#000000', linestyle=':', linewidth=0.5)
 ax.yaxis.grid(True)
 
 plt.show()
-
+"""
 #-------------- PLOT RECALL -----------------#
 
 ymin = 0
-
+width = 0.20
 fig = plt.figure()                                                               
 ax = fig.add_subplot(1,1,1)  
 
@@ -447,4 +455,3 @@ ax.yaxis.grid(which="major", color='#000000', linestyle=':', linewidth=0.5)
 ax.yaxis.grid(True)
 
 plt.show()
-"""

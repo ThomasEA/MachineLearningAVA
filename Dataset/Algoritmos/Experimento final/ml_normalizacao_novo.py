@@ -81,7 +81,7 @@ plt.rcParams['figure.figsize'] = (11,7)
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
 modulo_s = 3 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
-classificador = 1
+classificador = 3
 
 features = {
         50404: ['Questionario_Quantidade_Somado', 'Forum_TempoUso_Somado', 'Log_Post_Quantidade_Somado', 'Questionario_TempoUso_Somado', 'Login_Quantidade','Turno_TempoUsoTotal_Somado', 'Evadido','CodigoTurma'],
@@ -214,6 +214,9 @@ width=0.35
 opacity = 0.8
 tamFonte = 14
 
+plt.rcParams['axes.edgecolor'] = "0.15"
+plt.rcParams['axes.linewidth'] = 1.25
+
 fig = plt.figure()                                                               
 ax = fig.add_subplot(1,1,1)                                                              
 
@@ -236,9 +239,9 @@ autolabel(rects2, ax)
 
 classif_str = classificadores[classificador]
 
-plt.title('Semana {} - {}'.format(modulo_s, classif_str))
+#plt.title('Semana {} - {}'.format(modulo_s, classif_str))
 
-plt.ylabel('G-Mean', fontsize = tamFonte - 2, fontweight='bold')
+#plt.ylabel('G-Mean', fontsize = tamFonte - 2, fontweight='bold')
 
 plt.xticks(ind + width / 2,result['Disciplina'], fontsize = tamFonte - 2, fontweight='bold')
 #plt.xticklabels(result['Disciplina'])
@@ -246,8 +249,12 @@ plt.xticks(ind + width / 2,result['Disciplina'], fontsize = tamFonte - 2, fontwe
 plt.legend(prop={'size': tamFonte, 'weight': 'bold'})
 plt.tight_layout()
 
+ax.patch.set_facecolor('w')
+#ax.grid(True)
+
 axes = plt.gca()
 axes.set_ylim([40,100])
+
 plt.tick_params(axis='y', labelsize = tamFonte)
 plt.show()
 plt.savefig('gmean_m{}_{}'.format(modulo_s, classif_str))

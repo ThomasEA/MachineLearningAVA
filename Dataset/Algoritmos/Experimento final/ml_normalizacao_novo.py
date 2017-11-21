@@ -59,7 +59,7 @@ def sumarizar(i, disciplina, classificador, df, result, coral=False):
         result.set_value(i,classificador + 'RecallInsucesso', df['Recall Insucesso'].mean())
 
 def autolabel(rects, ax):
-    tamFonte = 14
+    tamFonte = 16
     
     (y_bottom, y_top) = ax.get_ylim()
     y_height = y_top - y_bottom
@@ -80,7 +80,7 @@ plt.rcParams['figure.figsize'] = (11,7)
 
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
-modulo_s = 3 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
+modulo_s = 6 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
 classificador = 3
 
 features = {
@@ -212,7 +212,7 @@ plt.savefig('accur_m{}_{}'.format(modulo_s, classif_str))
 #-----------------------#
 width=0.35
 opacity = 0.8
-tamFonte = 14
+tamFonte = 16
 
 plt.rcParams['axes.edgecolor'] = "0.15"
 plt.rcParams['axes.linewidth'] = 1.25
@@ -243,7 +243,7 @@ classif_str = classificadores[classificador]
 
 #plt.ylabel('G-Mean', fontsize = tamFonte - 2, fontweight='bold')
 
-plt.xticks(ind + width / 2,result['Disciplina'], fontsize = tamFonte - 2, fontweight='bold')
+plt.xticks(ind + width / 2,result['Disciplina'], fontsize = tamFonte+2, fontweight='bold')
 #plt.xticklabels(result['Disciplina'])
 
 plt.legend(prop={'size': tamFonte, 'weight': 'bold'})
@@ -253,9 +253,9 @@ ax.patch.set_facecolor('w')
 #ax.grid(True)
 
 axes = plt.gca()
-axes.set_ylim([40,100])
+axes.set_ylim([45,95])
 
-plt.tick_params(axis='y', labelsize = tamFonte)
+plt.tick_params(axis='y', labelsize = tamFonte + 2)
 plt.show()
 plt.savefig('gmean_m{}_{}'.format(modulo_s, classif_str))
 

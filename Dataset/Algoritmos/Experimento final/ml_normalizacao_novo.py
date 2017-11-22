@@ -77,8 +77,8 @@ df = pd.read_csv('../../dataset_m3_m6.csv', sep=';')
 
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
-modulo_s = 6 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
-classificador = 1
+modulo_s = 3 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
+classificador = 3
 
 features = {
         50404: ['Questionario_Quantidade_Somado', 'Forum_TempoUso_Somado', 'Log_Post_Quantidade_Somado', 'Questionario_TempoUso_Somado', 'Login_Quantidade','Turno_TempoUsoTotal_Somado', 'Evadido','CodigoTurma'],

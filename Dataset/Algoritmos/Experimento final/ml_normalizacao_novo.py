@@ -68,8 +68,8 @@ def autolabel(rects, ax):
         height = rect.get_height()
         label_position = height + (y_height * 0.01)
         ax.text(rect.get_x() + rect.get_width()/2., label_position,
-                '%.2f%%' % height,
-                ha='center', va='bottom', size = tamFonte + 6, rotation=90)
+                '%.1f%%' % height,
+                ha='center', va='bottom', size = tamFonte + 8, rotation=90)
         
 
 #Carrega dataset
@@ -81,7 +81,7 @@ plt.rcParams['figure.figsize'] = (11,7)
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
 modulo_s = 6 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
-classificador = 3
+classificador = 1
 
 features = {
         50404: ['Questionario_Quantidade_Somado', 'Forum_TempoUso_Somado', 'Log_Post_Quantidade_Somado', 'Questionario_TempoUso_Somado', 'Login_Quantidade','Turno_TempoUsoTotal_Somado', 'Evadido','CodigoTurma'],
@@ -210,7 +210,7 @@ plt.savefig('accur_m{}_{}'.format(modulo_s, classif_str))
 #-----------------------#
 #
 #-----------------------#
-width=0.35
+width=0.25
 opacity = 0.8
 tamFonte = 16
 
@@ -255,8 +255,8 @@ ax.patch.set_facecolor('w')
 axes = plt.gca()
 axes.set_ylim([45,100])
 
-plt.tick_params(axis='y', labelsize = tamFonte + 6)
-plt.tick_params(axis='x', labelsize = tamFonte + 6)
+plt.tick_params(axis='y', labelsize = tamFonte + 8)
+plt.tick_params(axis='x', labelsize = tamFonte + 8)
 plt.show()
 plt.savefig('gmean_m{}_{}'.format(modulo_s, classif_str))
 

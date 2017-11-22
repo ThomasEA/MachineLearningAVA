@@ -67,10 +67,10 @@ def autolabel(rects, ax):
     for rect in rects:
         height = rect.get_height()
         label_position = height + (y_height * 0.01)
-        
         ax.text(rect.get_x() + rect.get_width()/2., label_position,
                 '%.2f%%' % height,
-                ha='center', va='bottom', size = tamFonte)
+                ha='center', va='bottom', size = tamFonte + 6, rotation=90)
+        
 
 #Carrega dataset
 df = pd.read_csv('../../dataset_m3_m6.csv', sep=';')
@@ -92,8 +92,8 @@ features = {
             
 #-------------------------------------------------------
 disciplinas = {
-        50404: 'Fund. Proc. \nAdministrativo', 
-        60463: 'Ofic. Raciocínio\nLógico',
+        50404: 'Fundamentos\nProcesso\nAdministrativo', 
+        60463: 'Oficina\nRaciocínio\nLógico',
         60465: 'Matemática\nAdministração',
         60500: 'Lógica'
     }
@@ -253,9 +253,10 @@ ax.patch.set_facecolor('w')
 #ax.grid(True)
 
 axes = plt.gca()
-axes.set_ylim([45,95])
+axes.set_ylim([45,100])
 
-plt.tick_params(axis='y', labelsize = tamFonte + 2)
+plt.tick_params(axis='y', labelsize = tamFonte + 6)
+plt.tick_params(axis='x', labelsize = tamFonte + 6)
 plt.show()
 plt.savefig('gmean_m{}_{}'.format(modulo_s, classif_str))
 

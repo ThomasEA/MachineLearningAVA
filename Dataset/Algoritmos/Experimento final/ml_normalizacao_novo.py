@@ -75,9 +75,6 @@ def autolabel(rects, ax):
 #Carrega dataset
 df = pd.read_csv('../../dataset_m3_m6.csv', sep=';')
 
-plt.style.use('seaborn-colorblind')
-plt.rcParams['figure.figsize'] = (11,7)
-
 #-------------------------------------------------------
 # Configuração de filtros para o dataset
 modulo_s = 6 #0 = ignora o módulo. Lembrando que só existem os módulos 3 e 6
@@ -107,16 +104,6 @@ classificadores = {
 result = pd.DataFrame()
 
 #-----------------------------------------
-disciplina_s = 60500
-disciplina_string = str(disciplinas[disciplina_s])
-d1 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=False)
-sumarizar(1, disciplina_string, classificadores[classificador], d1, result)
-d2 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=True)
-sumarizar(1, disciplina_string, classificadores[classificador], d2, result, coral=True)
-
-#-----------------------------------------
-
-#-----------------------------------------
 disciplina_s = 60463
 disciplina_string = str(disciplinas[disciplina_s])
 d1 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=False)
@@ -132,6 +119,16 @@ d1 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=False
 sumarizar(3, disciplina_string, classificadores[classificador], d1, result)
 d2 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=True)
 sumarizar(3, disciplina_string, classificadores[classificador], d2, result, coral=True)
+#-----------------------------------------
+
+#-----------------------------------------
+disciplina_s = 60500
+disciplina_string = str(disciplinas[disciplina_s])
+d1 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=False)
+sumarizar(1, disciplina_string, classificadores[classificador], d1, result)
+d2 = preditor.process(df, disciplina_s, modulo_s, classificador, use_coral=True)
+sumarizar(1, disciplina_string, classificadores[classificador], d2, result, coral=True)
+
 #-----------------------------------------
 
 #-----------------------------------------
@@ -214,6 +211,8 @@ width=0.25
 opacity = 0.8
 tamFonte = 16
 
+#plt.style.use('seaborn-colorblind')
+plt.rcParams['figure.figsize'] = (8,6)
 plt.rcParams['axes.edgecolor'] = "0.15"
 plt.rcParams['axes.linewidth'] = 1.25
 
@@ -246,7 +245,10 @@ classif_str = classificadores[classificador]
 plt.xticks(ind + width / 2,result['Disciplina'], fontsize = tamFonte+2, fontweight='bold')
 #plt.xticklabels(result['Disciplina'])
 
-plt.legend(prop={'size': tamFonte, 'weight': 'bold'})
+#ax.legend((b1[0], b2[0]), ('Z-SCORE', 'CORAL'),bbox_to_anchor=(0.5,-0.10), loc='upper center', ncol=2)
+
+
+plt.legend(prop={'size': tamFonte, 'weight': 'bold'}, ncol=2)
 plt.tight_layout()
 
 ax.patch.set_facecolor('w')
@@ -255,8 +257,8 @@ ax.patch.set_facecolor('w')
 axes = plt.gca()
 axes.set_ylim([45,100])
 
-plt.tick_params(axis='y', labelsize = tamFonte + 8)
-plt.tick_params(axis='x', labelsize = tamFonte + 8)
+plt.tick_params(axis='y', labelsize = tamFonte + 3)
+plt.tick_params(axis='x', labelsize = tamFonte)
 plt.show()
 plt.savefig('gmean_m{}_{}'.format(modulo_s, classif_str))
 
